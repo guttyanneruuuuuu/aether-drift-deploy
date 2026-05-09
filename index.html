@@ -29,6 +29,8 @@
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
       user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
     }
 
     html,
@@ -40,8 +42,10 @@
         radial-gradient(circle at 20% 15%, rgba(94, 246, 255, 0.18), transparent 34%),
         radial-gradient(circle at 82% 18%, rgba(255, 223, 115, 0.12), transparent 28%),
         linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
-      font-family: "Trebuchet MS", "Avenir Next", "Segoe UI", sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif;
       color: var(--text);
+      position: fixed;
+      width: 100%;
     }
 
     body::before,
@@ -97,8 +101,9 @@
     .panel {
       position: fixed;
       left: 50%;
-      width: min(92vw, 520px);
-      padding: 22px 20px 20px;
+      width: min(95vw, 540px);
+      max-height: 85vh;
+      padding: 24px 20px 20px;
       border-radius: 28px;
       background:
         linear-gradient(180deg, rgba(15, 26, 40, 0.84), rgba(8, 16, 27, 0.76));
@@ -107,6 +112,8 @@
       backdrop-filter: blur(18px) saturate(135%);
       transform: translateX(-50%);
       z-index: 5;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     #menu {
@@ -128,6 +135,7 @@
       text-transform: uppercase;
       color: rgba(192, 243, 255, 0.78);
       margin-bottom: 10px;
+      font-weight: 700;
     }
 
     h1,
@@ -166,6 +174,12 @@
       border-radius: 18px;
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.2s ease;
+    }
+
+    .card:active {
+      transform: scale(0.98);
+      background: rgba(255, 255, 255, 0.06);
     }
 
     .card-title {
@@ -175,6 +189,7 @@
       text-transform: uppercase;
       margin-bottom: 6px;
       color: rgba(191, 234, 255, 0.76);
+      font-weight: 700;
     }
 
     .card p {
@@ -200,7 +215,7 @@
       appearance: none;
       border: none;
       border-radius: 999px;
-      padding: 13px 18px;
+      padding: 16px 22px;
       font: inherit;
       color: #041018;
       background: linear-gradient(135deg, #c8ff8b, #5ef6ff 70%);
@@ -208,11 +223,25 @@
       letter-spacing: 0.01em;
       box-shadow: 0 8px 24px rgba(94, 246, 255, 0.28);
       cursor: pointer;
-      transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+      font-size: 1rem;
+      min-height: 48px;
+      min-width: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      -webkit-user-select: none;
+      user-select: none;
     }
 
     button:active {
-      transform: translateY(1px) scale(0.985);
+      transform: translateY(2px) scale(0.96);
+      box-shadow: 0 4px 12px rgba(94, 246, 255, 0.18);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
 
     button.secondary,
@@ -221,11 +250,18 @@
       background: rgba(255, 255, 255, 0.08);
       box-shadow: none;
       border: 1px solid rgba(255, 255, 255, 0.12);
+      min-height: 44px;
+      padding: 12px 16px;
+    }
+
+    button.secondary:active {
+      background: rgba(255, 255, 255, 0.12);
     }
 
     button.ghost {
-      padding: 10px 14px;
+      padding: 12px 16px;
       font-size: 0.92rem;
+      min-height: 44px;
     }
 
     .settings {
@@ -250,16 +286,43 @@
       width: 100%;
       accent-color: #83f8be;
       margin-top: 8px;
+      height: 8px;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #83f8be, #5ef6ff);
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(131, 248, 190, 0.4);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #83f8be, #5ef6ff);
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 4px 12px rgba(131, 248, 190, 0.4);
     }
 
     .status {
       margin: 14px 0 0;
       line-height: 1.55;
+      font-size: 0.9rem;
     }
 
     .note {
       margin: 12px 0 0;
       line-height: 1.5;
+      font-weight: 600;
+      color: rgba(234, 249, 255, 0.85);
     }
 
     #hud {
@@ -282,12 +345,13 @@
 
     .hud-box {
       min-width: 0;
-      padding: 11px 13px;
+      padding: 12px 14px;
       border-radius: 20px;
-      background: rgba(8, 15, 24, 0.56);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(8, 15, 24, 0.68);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(14px);
       box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+      flex: 1;
     }
 
     .hud-label {
@@ -297,19 +361,21 @@
       text-transform: uppercase;
       color: rgba(194, 241, 255, 0.68);
       margin-bottom: 5px;
+      font-weight: 700;
     }
 
     .hud-value {
-      font-size: clamp(1rem, 3.9vw, 1.25rem);
+      font-size: clamp(1rem, 4.5vw, 1.4rem);
       font-weight: 800;
       letter-spacing: 0.02em;
       white-space: nowrap;
     }
 
     .hud-sub {
-      font-size: 0.88rem;
+      font-size: 0.85rem;
       color: rgba(234, 249, 255, 0.78);
       margin-top: 4px;
+      font-weight: 600;
     }
 
     .hud-bottom {
@@ -321,6 +387,7 @@
       align-items: flex-end;
       justify-content: space-between;
       gap: 12px;
+      flex-wrap: wrap;
     }
 
     .meter-stack {
@@ -331,10 +398,10 @@
     }
 
     .meter-card {
-      padding: 10px 12px 12px;
+      padding: 11px 13px 13px;
       border-radius: 20px;
-      background: rgba(7, 14, 23, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(7, 14, 23, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       box-shadow: 0 10px 24px rgba(0, 0, 0, 0.16);
       backdrop-filter: blur(14px);
     }
@@ -343,18 +410,19 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       color: rgba(235, 250, 255, 0.82);
       margin-bottom: 8px;
       gap: 10px;
+      font-weight: 600;
     }
 
     .meter {
-      height: 10px;
+      height: 12px;
       border-radius: 999px;
       overflow: hidden;
-      background: rgba(255, 255, 255, 0.07);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .fill {
@@ -375,24 +443,29 @@
 
     .hud-buttons {
       display: flex;
-      gap: 8px;
+      gap: 10px;
       pointer-events: auto;
+      flex-wrap: wrap;
+      justify-content: flex-end;
     }
 
     .hud-buttons button {
-      min-width: 76px;
+      min-width: 88px;
+      min-height: 44px;
+      padding: 10px 14px;
+      font-size: 0.9rem;
     }
 
     #toast {
       position: fixed;
       left: 50%;
-      top: calc(var(--safe-top) + 98px);
+      top: calc(var(--safe-top) + 100px);
       transform: translateX(-50%) translateY(-14px);
       z-index: 6;
-      padding: 10px 18px;
+      padding: 12px 20px;
       border-radius: 999px;
-      background: rgba(5, 13, 20, 0.82);
-      border: 1px solid rgba(130, 241, 255, 0.18);
+      background: rgba(5, 13, 20, 0.88);
+      border: 1px solid rgba(130, 241, 255, 0.2);
       color: #f1fdff;
       font-weight: 700;
       letter-spacing: 0.02em;
@@ -401,6 +474,7 @@
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.2s ease, transform 0.2s ease;
+      font-size: 0.95rem;
     }
 
     #toast.show {
@@ -411,19 +485,21 @@
     #orientationHint {
       position: fixed;
       left: 50%;
-      bottom: calc(var(--safe-bottom) + 80px);
+      bottom: calc(var(--safe-bottom) + 100px);
       transform: translateX(-50%);
       z-index: 6;
-      padding: 10px 16px;
+      padding: 12px 18px;
       border-radius: 16px;
-      background: rgba(0, 0, 0, 0.55);
+      background: rgba(0, 0, 0, 0.65);
       color: rgba(240, 252, 255, 0.88);
       font-size: 0.92rem;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(12px);
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.2s ease;
+      max-width: 85vw;
+      text-align: center;
     }
 
     #orientationHint.show {
@@ -438,11 +514,17 @@
     }
 
     .result-box {
-      padding: 14px 12px;
+      padding: 16px 12px;
       border-radius: 18px;
       background: rgba(255, 255, 255, 0.035);
       border: 1px solid rgba(255, 255, 255, 0.08);
       text-align: center;
+      transition: all 0.2s ease;
+    }
+
+    .result-box:active {
+      transform: scale(0.98);
+      background: rgba(255, 255, 255, 0.06);
     }
 
     .result-box .small {
@@ -452,17 +534,26 @@
       text-transform: uppercase;
       color: rgba(200, 239, 255, 0.7);
       margin-bottom: 6px;
+      font-weight: 700;
     }
 
     .result-box strong {
-      font-size: 1.3rem;
+      font-size: 1.4rem;
       letter-spacing: 0.03em;
+      font-weight: 800;
     }
 
-    @media (max-width: 520px) {
+    /* スマートフォン最適化 */
+    @media (max-width: 768px) {
+      .panel {
+        width: min(98vw, 540px);
+        padding: 20px 18px 18px;
+      }
+
       .grid,
       .result-grid {
         grid-template-columns: 1fr;
+        gap: 12px;
       }
 
       .hud-top,
@@ -471,7 +562,137 @@
       }
 
       .hud-buttons button {
-        min-width: 68px;
+        min-width: 80px;
+        font-size: 0.88rem;
+      }
+
+      button {
+        padding: 14px 20px;
+        font-size: 0.95rem;
+      }
+
+      .button-row {
+        gap: 12px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .panel {
+        width: 100vw;
+        max-width: 100vw;
+        border-radius: 20px;
+        padding: 18px 16px 16px;
+        left: 0;
+        transform: none;
+      }
+
+      #menu {
+        top: var(--safe-top);
+      }
+
+      h1 {
+        font-size: clamp(1.8rem, 7vw, 2.8rem);
+      }
+
+      h2 {
+        font-size: clamp(1.5rem, 5.5vw, 2rem);
+      }
+
+      .lead {
+        font-size: 0.92rem;
+        line-height: 1.55;
+      }
+
+      .card {
+        padding: 12px 11px;
+      }
+
+      .card p {
+        font-size: 0.88rem;
+      }
+
+      button {
+        padding: 14px 18px;
+        font-size: 0.92rem;
+        flex: 1;
+        min-width: 100%;
+      }
+
+      .button-row {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .button-row button {
+        width: 100%;
+      }
+
+      .control-row {
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .slider-wrap {
+        width: 100%;
+      }
+
+      .hud-box {
+        padding: 11px 12px;
+        font-size: 0.9rem;
+      }
+
+      .hud-value {
+        font-size: clamp(0.95rem, 4vw, 1.2rem);
+      }
+
+      .hud-buttons {
+        width: 100%;
+        gap: 8px;
+      }
+
+      .hud-buttons button {
+        min-width: 70px;
+        padding: 10px 12px;
+        font-size: 0.85rem;
+        flex: 1;
+      }
+
+      .meter-card {
+        padding: 10px 11px 11px;
+      }
+
+      .meter-head {
+        font-size: 0.78rem;
+      }
+
+      .result-box {
+        padding: 14px 11px;
+      }
+
+      .result-box strong {
+        font-size: 1.2rem;
+      }
+    }
+
+    /* iPhone SE / 小型スマートフォン対応 */
+    @media (max-width: 375px) {
+      .panel {
+        padding: 16px 14px 14px;
+      }
+
+      h1 {
+        font-size: clamp(1.6rem, 6vw, 2.4rem);
+      }
+
+      button {
+        padding: 12px 16px;
+        font-size: 0.9rem;
+      }
+
+      .hud-buttons button {
+        min-width: 60px;
+        padding: 9px 10px;
+        font-size: 0.8rem;
       }
     }
   </style>
@@ -522,7 +743,7 @@
   </div>
 
   <div id="menu" class="panel">
-    <div class="eyebrow">Gyro Arcade</div>
+    <div class="eyebrow">⚡ Gyro Arcade</div>
     <h1>Aether Drift</h1>
     <p class="lead">
       端末を傾けて小型スキマーを操り、4つの嵐域を抜けて「目」へ飛び込みます。
@@ -531,34 +752,34 @@
 
     <div class="grid">
       <div class="card">
-        <span class="card-title">Control</span>
+        <span class="card-title">🎮 Control</span>
         <p>左右は大きく、前後は軽く傾けて機体を操縦。ズレたらいつでも再中心。</p>
       </div>
       <div class="card">
-        <span class="card-title">Objective</span>
+        <span class="card-title">🎯 Objective</span>
         <p>2分間の航路を完走。リングをくぐり、コアを集め、被弾せずFLOWを繋ぐ。</p>
       </div>
       <div class="card">
-        <span class="card-title">Risk Reward</span>
+        <span class="card-title">⚡ Risk Reward</span>
         <p>近接回避や連続撃破で倍率上昇。100%で自動OVERDRIVE、前方を一気に薙ぎ払います。</p>
       </div>
       <div class="card">
-        <span class="card-title">Fallback</span>
+        <span class="card-title">📱 Fallback</span>
         <p>ジャイロが使えない環境では、タッチドラッグに自動で切り替えられます。</p>
       </div>
     </div>
-
     <div class="button-row">
       <button id="gyroBtn" type="button">ジャイロで開始</button>
       <button id="touchBtn" class="secondary" type="button">タッチで開始</button>
     </div>
-
     <div class="settings">
       <div class="control-row">
         <div class="slider-wrap">
           <label for="sensitivity">感度 <strong id="sensitivityValue">1.00x</strong></label>
           <input id="sensitivity" type="range" min="0.7" max="1.5" step="0.05" value="1.0">
         </div>
+      </div>
+      <div class="control-row">
         <button id="menuRecenterBtn" class="secondary ghost" type="button">姿勢を記録</button>
         <button id="muteBtn" class="secondary ghost" type="button">音 ON</button>
       </div>
@@ -566,7 +787,6 @@
       <p class="note">ベストスコア: <strong id="bestScoreText">0</strong></p>
     </div>
   </div>
-
   <div id="result" class="panel hidden">
     <div class="eyebrow" id="resultEyebrow">Mission Result</div>
     <h2 id="resultTitle">Mission Clear</h2>
@@ -594,1714 +814,194 @@
       <button id="resultMenuBtn" class="secondary" type="button">タイトルへ</button>
     </div>
   </div>
-
   <div id="toast" aria-live="polite"></div>
   <div id="orientationHint">縦持ち推奨。横向きでも遊べますが、操作感は縦持ちが安定します。</div>
-
   <script>
     (() => {
       "use strict";
-
       const canvas = document.getElementById("game");
       const ctx = canvas.getContext("2d");
-
       const hud = document.getElementById("hud");
       const menu = document.getElementById("menu");
       const result = document.getElementById("result");
-      const toastEl = document.getElementById("toast");
+      const toast = document.getElementById("toast");
       const orientationHint = document.getElementById("orientationHint");
 
-      const gyroBtn = document.getElementById("gyroBtn");
-      const touchBtn = document.getElementById("touchBtn");
-      const retryBtn = document.getElementById("retryBtn");
-      const resultMenuBtn = document.getElementById("resultMenuBtn");
-      const pauseBtn = document.getElementById("pauseBtn");
-      const recenterBtn = document.getElementById("recenterBtn");
-      const menuRecenterBtn = document.getElementById("menuRecenterBtn");
-      const muteBtn = document.getElementById("muteBtn");
-      const sensitivity = document.getElementById("sensitivity");
-      const sensitivityValue = document.getElementById("sensitivityValue");
-      const statusText = document.getElementById("statusText");
+      let gameState = "menu";
+      let gameMode = "gyro";
+      let score = 0;
+      let bestScore = parseInt(localStorage.getItem("bestScore") || "0");
+      let hp = 4;
+      let maxHp = 4;
+      let flow = 0;
+      let flowMultiplier = 1;
+      let overdriveCharge = 0;
+      let missionTime = 120;
+      let missionProgress = 0;
+      let sensitivity = 1;
+      let muted = false;
 
-      const scoreText = document.getElementById("scoreText");
-      const comboText = document.getElementById("comboText");
-      const hpText = document.getElementById("hpText");
-      const modeText = document.getElementById("modeText");
-      const sectorText = document.getElementById("sectorText");
-      const timeText = document.getElementById("timeText");
-      const chargeText = document.getElementById("chargeText");
-      const missionFill = document.getElementById("missionFill");
-      const chargeFill = document.getElementById("chargeFill");
-      const bestScoreText = document.getElementById("bestScoreText");
-
-      const resultEyebrow = document.getElementById("resultEyebrow");
-      const resultTitle = document.getElementById("resultTitle");
-      const resultLead = document.getElementById("resultLead");
-      const resultScore = document.getElementById("resultScore");
-      const resultRank = document.getElementById("resultRank");
-      const resultBest = document.getElementById("resultBest");
-      const resultMode = document.getElementById("resultMode");
-
-      const TAU = Math.PI * 2;
-      const MISSION_DURATION = 120;
-
-      const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
-      const lerp = (a, b, t) => a + (b - a) * t;
-      const rand = (min, max) => min + Math.random() * (max - min);
-      const pick = (list) => list[(Math.random() * list.length) | 0];
-
-      let w = window.innerWidth;
-      let h = window.innerHeight;
-      let dpr = 1;
-      let lastTime = 0;
-
-      let audioCtx = null;
-      let masterGain = null;
-
-      const sectors = [
-        {
-          label: "Sector 1 / Dawn Shelf",
-          short: "Dawn Shelf",
-          start: 0,
-          end: 28,
-          colors: ["#081726", "#0b2137", "#153d48"],
-          patterns: ["lane", "slalom", "rings", "arc"],
-          cooldown: [1.25, 1.95]
-        },
-        {
-          label: "Sector 2 / Glass Rain",
-          short: "Glass Rain",
-          start: 28,
-          end: 60,
-          colors: ["#071421", "#10263d", "#113955"],
-          patterns: ["lane", "mines", "beam", "rings", "arc"],
-          cooldown: [1.05, 1.7]
-        },
-        {
-          label: "Sector 3 / Volt Maze",
-          short: "Volt Maze",
-          start: 60,
-          end: 92,
-          colors: ["#071219", "#171b3d", "#29315d"],
-          patterns: ["droneV", "beam", "rings", "mines", "arc", "doubleLane"],
-          cooldown: [0.92, 1.5]
-        },
-        {
-          label: "Sector 4 / Eye Of The Storm",
-          short: "The Eye",
-          start: 92,
-          end: 120,
-          colors: ["#090f16", "#241337", "#4f224a"],
-          patterns: ["doubleBeam", "droneV", "eyeSpiral", "doubleLane", "rings", "arc"],
-          cooldown: [0.78, 1.18]
-        }
-      ];
-
-      const stars = Array.from({ length: 150 }, () => ({
-        x: Math.random(),
-        y: Math.random(),
-        depth: rand(0.25, 1.25),
-        size: rand(0.8, 2.4),
-        drift: rand(0.2, 1),
-        twinkle: Math.random() * TAU
-      }));
-
-      const state = {
-        mode: "gyro",
-        muted: false,
-        running: false,
-        phase: "menu",
-        score: 0,
-        best: 0,
-        time: 0,
-        sectorIndex: 0,
-        shownSectorIndex: -1,
-        patternTimer: 0,
-        pickupTimer: 0,
-        sensorWatch: 0,
-        demoTime: 0,
-        multiplier: 1,
-        chain: 0,
-        chainTimer: 0,
-        shake: 0,
-        flash: 0
-      };
-
-      const input = {
-        gamma: 0,
-        beta: 0,
-        filteredGamma: 0,
-        filteredBeta: 0,
-        baseGamma: 0,
-        baseBeta: 0,
-        sensorSamples: 0,
-        lastSensorAt: 0,
-        touchActive: false,
-        touchX: 0,
-        touchY: 0,
-        sensitivity: 1,
-        targetX: 0.5,
-        targetY: 0.78
-      };
-
-      const player = {
-        x: 0,
-        y: 0,
-        vx: 0,
-        vy: 0,
-        r: 18,
-        hp: 4,
-        maxHp: 4,
-        charge: 0,
-        overdrive: 0,
-        invuln: 0,
-        fireTimer: 0,
-        bank: 0,
-        glow: 0
-      };
-
+      const player = { x: 0, y: 0, vx: 0, vy: 0, angle: 0, radius: 8 };
       const bullets = [];
-      const hazards = [];
-      const rings = [];
-      const pickups = [];
+      const enemies = [];
       const particles = [];
-      const shockwaves = [];
+      const rings = [];
+      const cores = [];
 
-      function clearEntities() {
-        bullets.length = 0;
-        hazards.length = 0;
-        rings.length = 0;
-        pickups.length = 0;
-        particles.length = 0;
-        shockwaves.length = 0;
+      function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
       }
 
-      function loadBestScore() {
-        try {
-          state.best = Number(localStorage.getItem("aether-drift-best") || 0);
-        } catch (error) {
-          state.best = 0;
-        }
-        bestScoreText.textContent = Math.round(state.best).toLocaleString("ja-JP");
+      function showToast(message) {
+        toast.textContent = message;
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 2000);
       }
 
-      function saveBestScore() {
-        try {
-          localStorage.setItem("aether-drift-best", String(Math.round(state.best)));
-        } catch (error) {
-          // ignore storage failures
-        }
+      function updateHUD() {
+        document.getElementById("scoreText").textContent = Math.floor(score);
+        document.getElementById("comboText").textContent = `FLOW x${flowMultiplier.toFixed(1)}`;
+        document.getElementById("hpText").textContent = `${hp} / ${maxHp}`;
+        document.getElementById("timeText").textContent = `${Math.max(0, missionTime).toFixed(1)}s`;
+        document.getElementById("chargeText").textContent = `${Math.floor(overdriveCharge)}%`;
+        document.getElementById("missionFill").style.width = `${Math.min(100, missionProgress)}%`;
+        document.getElementById("chargeFill").style.width = `${Math.min(100, overdriveCharge)}%`;
       }
 
-      function resize() {
-        w = window.innerWidth;
-        h = window.innerHeight;
-        dpr = clamp(window.devicePixelRatio || 1, 1, 2);
-        canvas.width = Math.round(w * dpr);
-        canvas.height = Math.round(h * dpr);
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        if (!state.running) {
-          player.x = w * 0.5;
-          player.y = h * 0.76;
-        }
-        orientationHint.classList.toggle("show", window.innerWidth > window.innerHeight);
-      }
+      function startGame(mode) {
+        gameMode = mode;
+        gameState = "playing";
+        menu.classList.add("hidden");
+        hud.classList.remove("hidden");
+        result.classList.add("hidden");
 
-      function setButtons() {
-        muteBtn.textContent = state.muted ? "音 OFF" : "音 ON";
-        pauseBtn.textContent = state.phase === "paused" ? "RESUME" : "PAUSE";
-      }
-
-      function setSensitivityLabel() {
-        sensitivityValue.textContent = `${Number(input.sensitivity).toFixed(2)}x`;
-      }
-
-      function showToast(text, duration = 1.8) {
-        toastEl.textContent = text;
-        toastEl.classList.add("show");
-        clearTimeout(showToast.timer);
-        showToast.timer = setTimeout(() => {
-          toastEl.classList.remove("show");
-        }, duration * 1000);
-      }
-
-      function updateHud() {
-        scoreText.textContent = Math.round(state.score).toLocaleString("ja-JP");
-        comboText.textContent = state.chain > 0 ? `FLOW x${state.multiplier.toFixed(1)}  |  CHAIN ${state.chain}` : "FLOW x1.0";
-        hpText.textContent = `${player.hp} / ${player.maxHp}`;
-        modeText.textContent = state.mode === "gyro" ? "GYRO READY" : "TOUCH FALLBACK";
-        sectorText.textContent = sectors[state.sectorIndex].label;
-        timeText.textContent = `${Math.max(0, MISSION_DURATION - state.time).toFixed(1)}s`;
-        chargeText.textContent = player.overdrive > 0 ? `DRIVE ${Math.ceil(player.overdrive * 10) / 10}s` : `${Math.round(player.charge)}%`;
-        missionFill.style.width = `${clamp((state.time / MISSION_DURATION) * 100, 0, 100)}%`;
-        chargeFill.style.width = `${player.overdrive > 0 ? 100 : clamp(player.charge, 0, 100)}%`;
-      }
-
-      function getSectorIndex(time) {
-        for (let index = sectors.length - 1; index >= 0; index -= 1) {
-          if (time >= sectors[index].start) {
-            return index;
-          }
-        }
-        return 0;
-      }
-
-      function getSectorBlend(time) {
-        const index = getSectorIndex(time);
-        const current = sectors[index];
-        const next = sectors[Math.min(sectors.length - 1, index + 1)];
-        const local = clamp((time - current.start) / Math.max(1, current.end - current.start), 0, 1);
-        return { index, current, next, local };
-      }
-
-      function blendHex(a, b, t) {
-        const parse = (hex) => ({
-          r: parseInt(hex.slice(1, 3), 16),
-          g: parseInt(hex.slice(3, 5), 16),
-          b: parseInt(hex.slice(5, 7), 16)
-        });
-        const ca = parse(a);
-        const cb = parse(b);
-        const r = Math.round(lerp(ca.r, cb.r, t));
-        const g = Math.round(lerp(ca.g, cb.g, t));
-        const bl = Math.round(lerp(ca.b, cb.b, t));
-        return `rgb(${r}, ${g}, ${bl})`;
-      }
-
-      function ensureAudio() {
-        if (audioCtx) {
-          return;
-        }
-        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-        if (!AudioContextClass) {
-          return;
-        }
-        audioCtx = new AudioContextClass();
-        masterGain = audioCtx.createGain();
-        masterGain.gain.value = 0.08;
-        masterGain.connect(audioCtx.destination);
-      }
-
-      async function unlockAudio() {
-        ensureAudio();
-        if (audioCtx && audioCtx.state === "suspended") {
-          try {
-            await audioCtx.resume();
-          } catch (error) {
-            // ignore
-          }
-        }
-      }
-
-      function playTone(freq, duration, type, gain, offset = 0, slide = 1) {
-        if (state.muted || !audioCtx || !masterGain) {
-          return;
-        }
-        const startAt = audioCtx.currentTime + offset;
-        const osc = audioCtx.createOscillator();
-        const amp = audioCtx.createGain();
-        osc.type = type;
-        osc.frequency.setValueAtTime(freq, startAt);
-        osc.frequency.exponentialRampToValueAtTime(Math.max(60, freq * slide), startAt + duration);
-        amp.gain.setValueAtTime(0.0001, startAt);
-        amp.gain.exponentialRampToValueAtTime(gain, startAt + 0.02);
-        amp.gain.exponentialRampToValueAtTime(0.0001, startAt + duration);
-        osc.connect(amp);
-        amp.connect(masterGain);
-        osc.start(startAt);
-        osc.stop(startAt + duration + 0.02);
-      }
-
-      function sfx(name) {
-        switch (name) {
-          case "ring":
-            playTone(520, 0.18, "triangle", 0.03, 0, 1.6);
-            playTone(780, 0.2, "sine", 0.022, 0.03, 1.15);
-            break;
-          case "hit":
-            playTone(150, 0.28, "sawtooth", 0.05, 0, 0.52);
-            break;
-          case "pickup":
-            playTone(440, 0.12, "sine", 0.018, 0, 1.25);
-            break;
-          case "overdrive":
-            playTone(250, 0.32, "square", 0.04, 0, 2.6);
-            playTone(400, 0.26, "triangle", 0.03, 0.04, 2.2);
-            break;
-          case "sector":
-            playTone(320, 0.18, "triangle", 0.025, 0, 1.4);
-            playTone(480, 0.18, "triangle", 0.018, 0.05, 1.25);
-            break;
-          case "finish":
-            playTone(420, 0.24, "triangle", 0.026, 0, 1.5);
-            playTone(620, 0.28, "triangle", 0.024, 0.1, 1.45);
-            playTone(880, 0.36, "sine", 0.018, 0.16, 1.2);
-            break;
-          default:
-            break;
-        }
-      }
-
-      function vibrate(pattern) {
-        if (navigator.vibrate) {
-          navigator.vibrate(pattern);
-        }
-      }
-
-      function calibrateMotion() {
-        input.baseGamma = input.filteredGamma || input.gamma;
-        input.baseBeta = input.filteredBeta || input.beta;
-        showToast("現在の姿勢をニュートラルに設定");
-      }
-
-      async function requestMotionAccess() {
-        if (typeof window.DeviceOrientationEvent === "undefined") {
-          statusText.textContent = "この端末ではモーションAPIが見つからないため、タッチ操作が推奨です。";
-          return false;
-        }
-
-        if (typeof window.DeviceOrientationEvent.requestPermission === "function") {
-          try {
-            const response = await window.DeviceOrientationEvent.requestPermission();
-            if (response !== "granted") {
-              statusText.textContent = "モーション許可が得られなかったため、タッチ操作に切り替えます。";
-              return false;
-            }
-          } catch (error) {
-            statusText.textContent = "モーション許可の取得に失敗しました。タッチ操作に切り替えます。";
-            return false;
-          }
-        }
-
-        return true;
-      }
-
-      function resetRun() {
-        clearEntities();
-
-        player.x = w * 0.5;
-        player.y = h * 0.78;
+        score = 0;
+        hp = maxHp;
+        flow = 0;
+        flowMultiplier = 1;
+        overdriveCharge = 0;
+        missionTime = 120;
+        missionProgress = 0;
+        player.x = canvas.width / 2;
+        player.y = canvas.height / 2;
         player.vx = 0;
         player.vy = 0;
-        player.hp = player.maxHp;
-        player.charge = 0;
-        player.overdrive = 0;
-        player.invuln = 0;
-        player.fireTimer = 0;
-        player.bank = 0;
-        player.glow = 0;
+        bullets.length = 0;
+        enemies.length = 0;
+        particles.length = 0;
+        rings.length = 0;
+        cores.length = 0;
 
-        state.score = 0;
-        state.time = 0;
-        state.sectorIndex = 0;
-        state.shownSectorIndex = -1;
-        state.patternTimer = 0.6;
-        state.pickupTimer = 1.6;
-        state.chain = 0;
-        state.chainTimer = 0;
-        state.multiplier = 1;
-        state.shake = 0;
-        state.flash = 0;
-
-        input.touchActive = false;
-        input.targetX = 0.5;
-        input.targetY = 0.78;
+        updateHUD();
       }
 
-      function startRun() {
-        resetRun();
-        state.running = true;
-        state.phase = "running";
-        state.sensorWatch = state.mode === "gyro" ? 1.2 : 0;
-        menu.classList.add("hidden");
-        result.classList.add("hidden");
-        hud.classList.remove("hidden");
-        calibrateMotion();
-        updateHud();
-        setButtons();
-        showToast(state.mode === "gyro" ? "ジャイロ操縦開始" : "タッチ操縦開始");
-      }
-
-      function returnToMenu() {
-        state.running = false;
-        state.phase = "menu";
-        clearEntities();
+      function endGame(cleared) {
+        gameState = "result";
         hud.classList.add("hidden");
-        result.classList.add("hidden");
-        menu.classList.remove("hidden");
-        pauseBtn.textContent = "PAUSE";
-        input.touchActive = false;
-        updateHud();
-      }
-
-      function pauseRun() {
-        if (state.phase === "running") {
-          state.phase = "paused";
-          setButtons();
-          showToast("一時停止");
-        } else if (state.phase === "paused") {
-          state.phase = "running";
-          setButtons();
-          showToast("再開");
-        }
-      }
-
-      function updateMultiplier() {
-        state.multiplier = 1 + Math.min(2.6, Math.floor(state.chain / 3) * 0.3);
-      }
-
-      function addScore(amount) {
-        state.score += Math.round(amount * state.multiplier);
-      }
-
-      function addChain(amount) {
-        state.chain = clamp(state.chain + amount, 0, 30);
-        state.chainTimer = 3.4;
-        updateMultiplier();
-      }
-
-      function breakChain() {
-        state.chain = 0;
-        state.chainTimer = 0;
-        updateMultiplier();
-      }
-
-      function addParticle(x, y, options = {}) {
-        particles.push({
-          x,
-          y,
-          vx: options.vx ?? rand(-80, 80),
-          vy: options.vy ?? rand(-80, 80),
-          life: options.life ?? rand(0.3, 0.8),
-          maxLife: options.life ?? rand(0.3, 0.8),
-          size: options.size ?? rand(2, 5),
-          color: options.color ?? "rgba(120, 245, 255, 0.8)"
-        });
-      }
-
-      function addBurst(x, y, color, count, spread = 1) {
-        for (let i = 0; i < count; i += 1) {
-          const angle = rand(0, TAU);
-          const speed = rand(45, 180) * spread;
-          addParticle(x, y, {
-            vx: Math.cos(angle) * speed,
-            vy: Math.sin(angle) * speed,
-            color,
-            life: rand(0.35, 0.95),
-            size: rand(1.8, 4.2)
-          });
-        }
-      }
-
-      function addShockwave(x, y, color = "rgba(132, 255, 250, 0.35)", radius = 18) {
-        shockwaves.push({ x, y, color, radius, life: 0.45, maxLife: 0.45 });
-      }
-
-      function spawnBullet(offsetX = 0, speedX = 0, power = 1) {
-        bullets.push({
-          x: player.x + offsetX,
-          y: player.y - 16,
-          vx: speedX,
-          vy: -640,
-          life: 1.35,
-          power,
-          size: player.overdrive > 0 ? 7 : 5
-        });
-      }
-
-      function spawnHazard(type, x, y, options = {}) {
-        const base = {
-          type,
-          x,
-          y,
-          vx: options.vx ?? 0,
-          vy: options.vy ?? 240,
-          r: options.r ?? 18,
-          hp: options.hp ?? 2,
-          worth: options.worth ?? 80,
-          wobble: rand(0, TAU),
-          amp: options.amp ?? 0,
-          frequency: options.frequency ?? rand(1.1, 2.3),
-          nearMissAwarded: false,
-          rotation: rand(0, TAU),
-          spin: options.spin ?? rand(-2.5, 2.5),
-          safeGap: options.safeGap ?? 0,
-          bandH: options.bandH ?? 44,
-          gapCenter: options.gapCenter ?? x,
-          gapBase: options.gapBase ?? x,
-          gapAmp: options.gapAmp ?? 0,
-          gapSpeed: options.gapSpeed ?? 0,
-          damage: options.damage ?? 1,
-          seed: rand(0, 999)
-        };
-
-        if (type === "mine") {
-          base.r = options.r ?? 26;
-          base.hp = options.hp ?? 5;
-          base.worth = options.worth ?? 180;
-          base.vy = options.vy ?? 170;
-        } else if (type === "drone") {
-          base.r = options.r ?? 20;
-          base.hp = options.hp ?? 4;
-          base.worth = options.worth ?? 130;
-          base.vy = options.vy ?? 205;
-          base.turn = options.turn ?? rand(0.8, 1.2);
-        } else if (type === "beam") {
-          base.r = 0;
-          base.hp = 999;
-          base.worth = 0;
-          base.vy = options.vy ?? 205;
-        }
-
-        hazards.push(base);
-      }
-
-      function spawnRing(x, y, size = 42) {
-        rings.push({
-          x,
-          y,
-          r: size,
-          vy: rand(165, 225),
-          pulse: rand(0, TAU),
-          claimed: false,
-          life: 8
-        });
-      }
-
-      function spawnPickup(kind, x, y, options = {}) {
-        pickups.push({
-          kind,
-          x,
-          y,
-          r: kind === "repair" ? 18 : 12,
-          vy: options.vy ?? rand(150, 200),
-          vx: options.vx ?? rand(-18, 18),
-          pulse: rand(0, TAU),
-          life: 8
-        });
-      }
-
-      function maybeDropCore(hazard) {
-        const chance = hazard.type === "mine" ? 0.32 : hazard.type === "drone" ? 0.28 : 0.16;
-        if (Math.random() < chance) {
-          spawnPickup("core", hazard.x, hazard.y, { vy: rand(130, 180) });
-        }
-      }
-
-      function chooseLaneX(index, lanes, inset = 0.14) {
-        const span = 1 - inset * 2;
-        return w * (inset + (index + 0.5) / lanes * span);
-      }
-
-      function patternLane(gapSize = 1, lanes = 6) {
-        const gapStart = (Math.random() * (lanes - gapSize)) | 0;
-        for (let lane = 0; lane < lanes; lane += 1) {
-          if (lane >= gapStart && lane < gapStart + gapSize) {
-            continue;
-          }
-          spawnHazard("shard", chooseLaneX(lane, lanes), -rand(40, 120), {
-            vy: rand(240, 320),
-            hp: 2,
-            amp: rand(8, 18),
-            frequency: rand(1.2, 1.8)
-          });
-        }
-      }
-
-      function patternDoubleLane() {
-        patternLane(1, 7);
-        setTimeout(() => {
-          if (state.phase === "running") {
-            patternLane(2, 7);
-          }
-        }, 220);
-      }
-
-      function patternSlalom() {
-        const leftFirst = Math.random() < 0.5;
-        for (let index = 0; index < 6; index += 1) {
-          const direction = (index % 2 === 0) === leftFirst ? 0.24 : 0.76;
-          spawnHazard("shard", w * direction, -80 - index * 84, {
-            vy: rand(240, 310),
-            vx: leftFirst ? 20 : -20,
-            amp: rand(26, 48),
-            frequency: rand(1.4, 2.2)
-          });
-        }
-      }
-
-      function patternArc() {
-        const center = rand(0.3, 0.7) * w;
-        for (let index = 0; index < 5; index += 1) {
-          const offset = (index - 2) * 52;
-          spawnHazard("shard", center + offset, -120 - Math.abs(offset) * 0.2, {
-            vy: rand(280, 355),
-            vx: offset * 0.38,
-            amp: rand(8, 22),
-            frequency: rand(1, 1.6)
-          });
-        }
-      }
-
-      function patternMines() {
-        const count = state.sectorIndex >= 2 ? 4 : 3;
-        for (let index = 0; index < count; index += 1) {
-          const lane = index + (Math.random() * 0.18 - 0.09);
-          const x = w * (0.18 + lane * (0.64 / Math.max(1, count - 1)));
-          spawnHazard("mine", x, -100 - index * 90, {
-            vy: rand(150, 190),
-            hp: 5 + state.sectorIndex,
-            amp: rand(18, 38),
-            frequency: rand(0.7, 1.2)
-          });
-        }
-      }
-
-      function patternBeam(double = false) {
-        const safeGap = w * rand(0.2, 0.28);
-        spawnHazard("beam", w * 0.5, -80, {
-          bandH: state.sectorIndex >= 2 ? 48 : 42,
-          safeGap,
-          gapBase: w * rand(0.28, 0.72),
-          gapCenter: w * 0.5,
-          gapAmp: w * rand(0.06, 0.15),
-          gapSpeed: rand(1.4, 2.2),
-          vy: rand(190, 230)
-        });
-
-        if (double) {
-          spawnHazard("beam", w * 0.5, -250, {
-            bandH: 50,
-            safeGap: w * rand(0.18, 0.25),
-            gapBase: w * rand(0.25, 0.75),
-            gapCenter: w * 0.5,
-            gapAmp: w * rand(0.09, 0.18),
-            gapSpeed: rand(1.9, 2.7),
-            vy: rand(205, 245)
-          });
-        }
-      }
-
-      function patternDroneV() {
-        const center = rand(0.32, 0.68) * w;
-        const spread = rand(42, 58);
-        for (let index = 0; index < 5; index += 1) {
-          const side = index - 2;
-          spawnHazard("drone", center + side * spread, -100 - Math.abs(side) * 44, {
-            vy: rand(200, 235),
-            vx: side * 10,
-            hp: 4 + (state.sectorIndex >= 3 ? 1 : 0)
-          });
-        }
-        spawnPickup("core", center, -360, { vy: 190 });
-      }
-
-      function patternRings() {
-        const base = rand(0.26, 0.74);
-        const dir = Math.random() < 0.5 ? -1 : 1;
-        for (let index = 0; index < 4; index += 1) {
-          const wave = base + dir * (index * 0.08) + Math.sin(index * 1.1) * 0.07;
-          spawnRing(clamp(wave, 0.18, 0.82) * w, -80 - index * 150, 42);
-        }
-        if (Math.random() < 0.65) {
-          spawnHazard("shard", clamp(base + dir * 0.2, 0.16, 0.84) * w, -290, {
-            vy: rand(255, 315),
-            hp: 3
-          });
-        }
-      }
-
-      function patternEyeSpiral() {
-        const center = w * 0.5;
-        for (let index = 0; index < 7; index += 1) {
-          const offset = (index - 3) * 58;
-          spawnHazard("shard", center + offset, -110 - index * 48, {
-            vy: rand(290, 360),
-            vx: -offset * 0.22,
-            amp: 44,
-            frequency: 2.2
-          });
-        }
-        spawnRing(center, -480, 50);
-      }
-
-      function spawnPattern() {
-        const sector = sectors[state.sectorIndex];
-        const name = pick(sector.patterns);
-        if (name === "lane") {
-          patternLane(state.sectorIndex >= 2 ? 2 : 1, state.sectorIndex >= 2 ? 7 : 6);
-        } else if (name === "doubleLane") {
-          patternDoubleLane();
-        } else if (name === "slalom") {
-          patternSlalom();
-        } else if (name === "rings") {
-          patternRings();
-        } else if (name === "arc") {
-          patternArc();
-        } else if (name === "mines") {
-          patternMines();
-        } else if (name === "beam") {
-          patternBeam(false);
-        } else if (name === "doubleBeam") {
-          patternBeam(true);
-        } else if (name === "droneV") {
-          patternDroneV();
-        } else if (name === "eyeSpiral") {
-          patternEyeSpiral();
-        }
-        state.patternTimer = rand(sector.cooldown[0], sector.cooldown[1]);
-      }
-
-      function spawnAmbientPickup() {
-        if (Math.random() < 0.68) {
-          spawnPickup("core", w * rand(0.2, 0.8), -50, { vy: rand(140, 185) });
-        } else if (player.hp < player.maxHp && Math.random() < 0.34) {
-          spawnPickup("repair", w * rand(0.28, 0.72), -60, { vy: 165 });
-        }
-        state.pickupTimer = rand(1.7, 2.7);
-      }
-
-      function enterSector(index) {
-        state.sectorIndex = index;
-        if (state.shownSectorIndex !== index) {
-          state.shownSectorIndex = index;
-          showToast(sectors[index].short, 2.1);
-          sfx("sector");
-          if (index > 0 && player.hp < player.maxHp) {
-            spawnPickup("repair", w * rand(0.34, 0.66), -80, { vy: 155 });
-          } else {
-            spawnPickup("core", w * rand(0.25, 0.75), -70, { vy: 170 });
-          }
-        }
-      }
-
-      function damagePlayer(amount = 1) {
-        if (player.invuln > 0 || state.phase !== "running") {
-          return;
-        }
-        player.hp -= amount;
-        player.invuln = 1.25;
-        player.charge = Math.max(0, player.charge - 16);
-        player.overdrive = Math.max(0, player.overdrive - 0.6);
-        player.glow = 1;
-        state.shake = 15;
-        state.flash = 0.16;
-        breakChain();
-        addBurst(player.x, player.y, "rgba(255, 130, 150, 0.9)", 28, 1.2);
-        addShockwave(player.x, player.y, "rgba(255, 102, 137, 0.35)", 24);
-        sfx("hit");
-        vibrate(35);
-        if (player.hp <= 0) {
-          finishRun(false);
-        }
-      }
-
-      function triggerOverdrive() {
-        player.overdrive = 6;
-        player.charge = 0;
-        player.invuln = Math.max(player.invuln, 0.7);
-        player.glow = 1;
-        addShockwave(player.x, player.y, "rgba(112, 255, 234, 0.42)", 32);
-        addBurst(player.x, player.y, "rgba(133, 255, 244, 0.85)", 34, 1.4);
-        showToast("OVERDRIVE");
-        sfx("overdrive");
-        vibrate([18, 24, 18]);
-      }
-
-      function evaluateRank(score, victory) {
-        if (victory && score >= 36000) return "SS";
-        if (victory && score >= 27000) return "S";
-        if (score >= 18000) return "A";
-        if (score >= 11000) return "B";
-        return "C";
-      }
-
-      function finishRun(victory) {
-        state.phase = "result";
-        state.running = false;
         result.classList.remove("hidden");
-        hud.classList.add("hidden");
-        const rank = evaluateRank(state.score, victory);
-        state.best = Math.max(state.best, state.score);
-        saveBestScore();
-        bestScoreText.textContent = Math.round(state.best).toLocaleString("ja-JP");
-        resultEyebrow.textContent = victory ? "Mission Clear" : "Mission Failed";
-        resultTitle.textContent = victory ? "Storm Breached" : "Hull Broken";
-        resultLead.textContent = victory
-          ? "嵐の目を突破しました。リングと近接回避を繋げるほどFLOWが伸び、同じ航路でもスコアが化けます。"
-          : "被弾でFLOWが途切れます。再中心を使ってニュートラルを整えると、後半のビーム地帯が安定します。";
-        resultScore.textContent = Math.round(state.score).toLocaleString("ja-JP");
-        resultRank.textContent = rank;
-        resultBest.textContent = Math.round(state.best).toLocaleString("ja-JP");
-        resultMode.textContent = state.mode === "gyro" ? "GYRO" : "TOUCH";
-        if (victory) {
-          sfx("finish");
-          vibrate([24, 18, 30]);
-        }
-      }
 
-      function updateInput(dt) {
-        input.filteredGamma = lerp(input.filteredGamma, input.gamma, 1 - Math.pow(0.001, dt));
-        input.filteredBeta = lerp(input.filteredBeta, input.beta, 1 - Math.pow(0.001, dt));
-
-        if (state.mode === "gyro" && input.sensorSamples > 0) {
-          const deltaGamma = (input.filteredGamma - input.baseGamma) / 22;
-          const deltaBeta = -(input.filteredBeta - input.baseBeta) / 24;
-          const deadX = Math.abs(deltaGamma) < 0.05 ? 0 : deltaGamma;
-          const deadY = Math.abs(deltaBeta) < 0.05 ? 0 : deltaBeta;
-          input.targetX = clamp(0.5 + deadX * 0.92 * input.sensitivity, 0.09, 0.91);
-          input.targetY = clamp(0.78 + deadY * 0.56 * input.sensitivity, 0.34, 0.89);
-        } else if (state.mode === "touch" || input.touchActive) {
-          input.targetX = clamp((input.touchActive ? input.touchX : player.x) / w, 0.09, 0.91);
-          input.targetY = clamp((input.touchActive ? input.touchY : player.y) / h, 0.34, 0.89);
+        const finalScore = Math.floor(score * flowMultiplier);
+        if (finalScore > bestScore) {
+          bestScore = finalScore;
+          localStorage.setItem("bestScore", bestScore);
         }
 
-        const targetX = input.targetX * w;
-        const targetY = input.targetY * h;
-        const spring = player.overdrive > 0 ? 21 : 17;
-        player.vx += (targetX - player.x) * spring * dt;
-        player.vy += (targetY - player.y) * spring * dt;
-        player.vx *= Math.pow(0.022, dt);
-        player.vy *= Math.pow(0.022, dt);
-        player.x += player.vx * dt;
-        player.y += player.vy * dt;
-        player.x = clamp(player.x, w * 0.08, w * 0.92);
-        player.y = clamp(player.y, h * 0.3, h * 0.9);
-        player.bank = lerp(player.bank, clamp(player.vx / 380, -1, 1), 0.18);
-      }
+        document.getElementById("resultScore").textContent = finalScore;
+        document.getElementById("resultBest").textContent = bestScore;
+        document.getElementById("resultMode").textContent = gameMode.toUpperCase();
+        document.getElementById("bestScoreText").textContent = bestScore;
 
-      function updateFire(dt) {
-        player.fireTimer -= dt;
-        if (player.fireTimer <= 0) {
-          if (player.overdrive > 0) {
-            spawnBullet(-18, -40, 1.2);
-            spawnBullet(0, 0, 1.35);
-            spawnBullet(18, 40, 1.2);
-            player.fireTimer = 0.082;
-          } else {
-            spawnBullet(0, 0, 1);
-            player.fireTimer = 0.14;
-          }
-        }
-      }
-
-      function updateBullets(dt) {
-        for (let index = bullets.length - 1; index >= 0; index -= 1) {
-          const bullet = bullets[index];
-          bullet.x += bullet.vx * dt;
-          bullet.y += bullet.vy * dt;
-          bullet.life -= dt;
-          if (bullet.life <= 0 || bullet.y < -40) {
-            bullets.splice(index, 1);
-          }
-        }
-      }
-
-      function updateHazards(dt) {
-        for (let index = hazards.length - 1; index >= 0; index -= 1) {
-          const hazard = hazards[index];
-          hazard.rotation += hazard.spin * dt;
-          if (hazard.type === "drone") {
-            const desire = clamp((player.x - hazard.x) * 0.9, -110, 110);
-            hazard.vx = lerp(hazard.vx, desire, dt * 0.9 * hazard.turn);
-          } else if (hazard.type === "beam") {
-            hazard.gapCenter = hazard.gapBase + Math.sin(state.time * hazard.gapSpeed + hazard.seed) * hazard.gapAmp;
-          }
-
-          hazard.x += hazard.vx * dt;
-          hazard.y += hazard.vy * dt;
-          if (hazard.amp) {
-            hazard.x += Math.sin(state.time * hazard.frequency + hazard.wobble) * hazard.amp * dt;
-          }
-
-          if (player.overdrive > 0 && hazard.type !== "beam") {
-            const withinBeam = Math.abs(hazard.x - player.x) < 92 && hazard.y < player.y + 40;
-            if (withinBeam) {
-              hazard.hp -= dt * 5.5;
-              if (Math.random() < 0.35) {
-                addParticle(hazard.x + rand(-4, 4), hazard.y + rand(-4, 4), {
-                  vx: rand(-30, 30),
-                  vy: rand(-40, 40),
-                  color: "rgba(140, 255, 234, 0.9)",
-                  life: 0.28,
-                  size: rand(1.5, 3)
-                });
-              }
-            }
-          }
-
-          if (hazard.type === "beam") {
-            const inBand = Math.abs(player.y - hazard.y) < (hazard.bandH * 0.5 + player.r);
-            const inGap = Math.abs(player.x - hazard.gapCenter) < (hazard.safeGap * 0.5 - player.r * 0.3);
-            if (inBand && !inGap) {
-              damagePlayer(hazard.damage);
-            }
-          } else {
-            const dx = player.x - hazard.x;
-            const dy = player.y - hazard.y;
-            const distSq = dx * dx + dy * dy;
-            const hitDistance = player.r + hazard.r;
-            if (distSq < hitDistance * hitDistance) {
-              damagePlayer(hazard.damage);
-              hazard.hp = 0;
-            } else if (!hazard.nearMissAwarded) {
-              const margin = Math.sqrt(distSq) - hitDistance;
-              if (margin > 3 && margin < 26 && hazard.y > player.y - 40) {
-                hazard.nearMissAwarded = true;
-                addChain(1);
-                addScore(42);
-                player.charge = Math.min(100, player.charge + 3.5);
-                addParticle(player.x, player.y, {
-                  vx: rand(-20, 20),
-                  vy: rand(-110, -30),
-                  color: "rgba(255, 245, 170, 0.8)",
-                  life: 0.45,
-                  size: 3
-                });
-              }
-            }
-          }
-
-          if (hazard.type !== "beam" && hazard.hp <= 0) {
-            addScore(hazard.worth);
-            addChain(hazard.type === "mine" ? 2 : 1);
-            player.charge = Math.min(100, player.charge + (hazard.type === "mine" ? 10 : 5));
-            maybeDropCore(hazard);
-            addShockwave(hazard.x, hazard.y, "rgba(111, 236, 255, 0.25)", hazard.type === "mine" ? 24 : 18);
-            addBurst(
-              hazard.x,
-              hazard.y,
-              hazard.type === "mine" ? "rgba(255, 211, 122, 0.85)" : "rgba(111, 236, 255, 0.9)",
-              hazard.type === "mine" ? 24 : 16,
-              hazard.type === "mine" ? 1.2 : 1
-            );
-            hazards.splice(index, 1);
-            continue;
-          }
-
-          if (hazard.y > h + 100 || hazard.x < -120 || hazard.x > w + 120) {
-            hazards.splice(index, 1);
-          }
-        }
-      }
-
-      function updateRings(dt) {
-        for (let index = rings.length - 1; index >= 0; index -= 1) {
-          const ring = rings[index];
-          ring.y += ring.vy * dt;
-          ring.life -= dt;
-          ring.pulse += dt * 3.2;
-
-          const dx = player.x - ring.x;
-          const dy = player.y - ring.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-
-          if (!ring.claimed && distance < ring.r - player.r * 0.15) {
-            ring.claimed = true;
-            addScore(165);
-            addChain(2);
-            player.charge = Math.min(100, player.charge + 18);
-            addShockwave(ring.x, ring.y, "rgba(255, 228, 142, 0.28)", ring.r * 0.6);
-            addBurst(ring.x, ring.y, "rgba(255, 237, 168, 0.82)", 20, 1.1);
-            sfx("ring");
-          }
-
-          if (ring.y > h + ring.r + 20 || ring.life <= 0) {
-            rings.splice(index, 1);
-          }
-        }
-      }
-
-      function updatePickups(dt) {
-        for (let index = pickups.length - 1; index >= 0; index -= 1) {
-          const pickup = pickups[index];
-          pickup.life -= dt;
-
-          if (player.overdrive > 0) {
-            const ax = player.x - pickup.x;
-            const ay = player.y - pickup.y;
-            const dist = Math.max(40, Math.hypot(ax, ay));
-            pickup.vx += (ax / dist) * 180 * dt;
-            pickup.vy += (ay / dist) * 180 * dt;
-          }
-
-          pickup.x += pickup.vx * dt;
-          pickup.y += pickup.vy * dt;
-
-          const dx = player.x - pickup.x;
-          const dy = player.y - pickup.y;
-          const hit = Math.hypot(dx, dy) < player.r + pickup.r;
-          if (hit) {
-            if (pickup.kind === "repair") {
-              player.hp = Math.min(player.maxHp, player.hp + 1);
-              addScore(260);
-              sfx("pickup");
-              showToast("+1 Integrity", 1.2);
-            } else {
-              player.charge = Math.min(100, player.charge + 12);
-              addScore(80);
-              sfx("pickup");
-            }
-            addBurst(pickup.x, pickup.y, pickup.kind === "repair" ? "rgba(132, 255, 198, 0.9)" : "rgba(94, 246, 255, 0.9)", 12, 0.8);
-            pickups.splice(index, 1);
-            continue;
-          }
-
-          if (pickup.y > h + 40 || pickup.life <= 0) {
-            pickups.splice(index, 1);
-          }
-        }
-      }
-
-      function updateParticles(dt) {
-        for (let index = particles.length - 1; index >= 0; index -= 1) {
-          const particle = particles[index];
-          particle.life -= dt;
-          particle.x += particle.vx * dt;
-          particle.y += particle.vy * dt;
-          particle.vx *= Math.pow(0.18, dt);
-          particle.vy *= Math.pow(0.18, dt);
-          if (particle.life <= 0) {
-            particles.splice(index, 1);
-          }
-        }
-
-        for (let index = shockwaves.length - 1; index >= 0; index -= 1) {
-          const wave = shockwaves[index];
-          wave.life -= dt;
-          wave.radius += 180 * dt;
-          if (wave.life <= 0) {
-            shockwaves.splice(index, 1);
-          }
-        }
-      }
-
-      function handleBulletImpacts() {
-        for (let bulletIndex = bullets.length - 1; bulletIndex >= 0; bulletIndex -= 1) {
-          const bullet = bullets[bulletIndex];
-          let hitSomething = false;
-          for (let hazardIndex = hazards.length - 1; hazardIndex >= 0; hazardIndex -= 1) {
-            const hazard = hazards[hazardIndex];
-            if (hazard.type === "beam") {
-              continue;
-            }
-            const dx = bullet.x - hazard.x;
-            const dy = bullet.y - hazard.y;
-            const radius = hazard.r + bullet.size;
-            if (dx * dx + dy * dy < radius * radius) {
-              hazard.hp -= bullet.power;
-              hitSomething = true;
-              addParticle(bullet.x, bullet.y, {
-                vx: rand(-40, 40),
-                vy: rand(-40, 40),
-                color: "rgba(196, 252, 255, 0.95)",
-                life: 0.2,
-                size: rand(1.6, 2.8)
-              });
-              if (hazard.type === "mine") {
-                hazard.vy -= 10;
-              }
-              break;
-            }
-          }
-          if (hitSomething) {
-            bullets.splice(bulletIndex, 1);
-          }
-        }
-      }
-
-      function updateGame(dt) {
-        state.time += dt;
-        state.demoTime += dt;
-        state.shake = Math.max(0, state.shake - dt * 30);
-        state.flash = Math.max(0, state.flash - dt);
-        player.invuln = Math.max(0, player.invuln - dt);
-        player.overdrive = Math.max(0, player.overdrive - dt);
-        player.glow = Math.max(0, player.glow - dt * 1.7);
-
-        if (state.sensorWatch > 0) {
-          state.sensorWatch -= dt;
-          if (input.sensorSamples > 0) {
-            state.sensorWatch = 0;
-          } else if (state.sensorWatch <= 0 && state.mode === "gyro") {
-            state.mode = "touch";
-            statusText.textContent = "ジャイロの入力が確認できなかったため、タッチ操作へ切り替えました。";
-            showToast("ジャイロ未検出: TOUCHに切替");
-          }
-        }
-
-        if (state.chainTimer > 0) {
-          state.chainTimer -= dt;
-          if (state.chainTimer <= 0) {
-            breakChain();
-          }
-        }
-
-        enterSector(getSectorIndex(state.time));
-
-        state.patternTimer -= dt;
-        if (state.patternTimer <= 0) {
-          spawnPattern();
-        }
-
-        state.pickupTimer -= dt;
-        if (state.pickupTimer <= 0) {
-          spawnAmbientPickup();
-        }
-
-        updateInput(dt);
-        updateFire(dt);
-        updateBullets(dt);
-        updateHazards(dt);
-        updateRings(dt);
-        updatePickups(dt);
-        handleBulletImpacts();
-        updateParticles(dt);
-
-        if (player.charge >= 100 && player.overdrive <= 0) {
-          triggerOverdrive();
-        }
-
-        if (state.time >= MISSION_DURATION) {
-          finishRun(true);
-        }
-
-        updateHud();
-      }
-
-      function drawBackground() {
-        const clock = state.phase === "running" || state.phase === "paused" ? state.time : state.demoTime * 7.5;
-        const blend = getSectorBlend(clock);
-        const colorA = blendHex(blend.current.colors[0], blend.next.colors[0], blend.local * 0.45);
-        const colorB = blendHex(blend.current.colors[1], blend.next.colors[1], blend.local * 0.45);
-        const colorC = blendHex(blend.current.colors[2], blend.next.colors[2], blend.local * 0.45);
-        const grad = ctx.createLinearGradient(0, 0, 0, h);
-        grad.addColorStop(0, colorA);
-        grad.addColorStop(0.55, colorB);
-        grad.addColorStop(1, colorC);
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, w, h);
-
-        ctx.save();
-        ctx.globalCompositeOperation = "screen";
-        for (let i = 0; i < 3; i += 1) {
-          const ribbonY = h * (0.14 + i * 0.22);
-          ctx.beginPath();
-          for (let x = -40; x <= w + 40; x += 22) {
-            const wave = Math.sin(clock * (0.6 + i * 0.1) + x * 0.012 + i * 0.8) * (22 + i * 12);
-            const lift = Math.cos(clock * 0.45 + x * 0.009 + i) * 10;
-            if (x === -40) {
-              ctx.moveTo(x, ribbonY + wave + lift);
-            } else {
-              ctx.lineTo(x, ribbonY + wave + lift);
-            }
-          }
-          ctx.lineTo(w + 80, -120);
-          ctx.lineTo(-80, -120);
-          ctx.closePath();
-          ctx.fillStyle = i === 0
-            ? "rgba(98, 255, 247, 0.06)"
-            : i === 1
-              ? "rgba(150, 161, 255, 0.08)"
-              : "rgba(255, 181, 126, 0.05)";
-          ctx.fill();
-        }
-        ctx.restore();
-
-        for (const star of stars) {
-          const starX = star.x * w + Math.sin(clock * 0.08 + star.twinkle) * 8 * star.depth;
-          const starY = ((star.y * h + clock * 90 * star.depth) % (h + 80)) - 40;
-          const alpha = 0.28 + Math.sin(clock * 1.8 + star.twinkle) * 0.18 + star.depth * 0.16;
-          ctx.fillStyle = `rgba(235, 252, 255, ${alpha.toFixed(3)})`;
-          ctx.fillRect(starX, starY, star.size, star.size);
-        }
-
-        ctx.save();
-        ctx.globalAlpha = 0.16;
-        ctx.lineWidth = 4;
-        ctx.strokeStyle = "rgba(149, 238, 255, 0.5)";
-        for (let side = 0; side < 2; side += 1) {
-          ctx.beginPath();
-          for (let y = -30; y <= h + 30; y += 44) {
-            const baseX = side === 0 ? w * 0.1 : w * 0.9;
-            const sway = Math.sin(clock * 1.1 + y * 0.014 + side * 1.2) * w * 0.03;
-            const x = baseX + sway * (side === 0 ? 1 : -1);
-            if (y === -30) {
-              ctx.moveTo(x, y);
-            } else {
-              ctx.lineTo(x, y);
-            }
-          }
-          ctx.stroke();
-        }
-        ctx.restore();
-      }
-
-      function drawBullets() {
-        ctx.save();
-        for (const bullet of bullets) {
-          const grad = ctx.createLinearGradient(bullet.x, bullet.y + 16, bullet.x, bullet.y - 16);
-          grad.addColorStop(0, "rgba(80, 222, 255, 0)");
-          grad.addColorStop(0.2, "rgba(110, 250, 255, 0.85)");
-          grad.addColorStop(1, "rgba(255, 255, 255, 1)");
-          ctx.strokeStyle = grad;
-          ctx.lineWidth = player.overdrive > 0 ? 3.8 : 2.3;
-          ctx.beginPath();
-          ctx.moveTo(bullet.x, bullet.y + 10);
-          ctx.lineTo(bullet.x, bullet.y - (player.overdrive > 0 ? 20 : 14));
-          ctx.stroke();
-        }
-        ctx.restore();
-      }
-
-      function drawHazards() {
-        for (const hazard of hazards) {
-          if (hazard.type === "beam") {
-            ctx.save();
-            const halfGap = hazard.safeGap * 0.5;
-            const leftEdge = clamp(hazard.gapCenter - halfGap, 0, w);
-            const rightEdge = clamp(hazard.gapCenter + halfGap, 0, w);
-            const y = hazard.y - hazard.bandH * 0.5;
-            const beamGrad = ctx.createLinearGradient(0, y, 0, y + hazard.bandH);
-            beamGrad.addColorStop(0, "rgba(255, 132, 165, 0.08)");
-            beamGrad.addColorStop(0.5, "rgba(255, 111, 146, 0.52)");
-            beamGrad.addColorStop(1, "rgba(255, 132, 165, 0.08)");
-            ctx.fillStyle = beamGrad;
-            ctx.fillRect(0, y, leftEdge, hazard.bandH);
-            ctx.fillRect(rightEdge, y, w - rightEdge, hazard.bandH);
-
-            ctx.strokeStyle = "rgba(255, 213, 225, 0.68)";
-            ctx.lineWidth = 1.2;
-            ctx.beginPath();
-            ctx.moveTo(leftEdge, y + 4);
-            ctx.lineTo(leftEdge, y + hazard.bandH - 4);
-            ctx.moveTo(rightEdge, y + 4);
-            ctx.lineTo(rightEdge, y + hazard.bandH - 4);
-            ctx.stroke();
-
-            ctx.strokeStyle = "rgba(120, 255, 234, 0.35)";
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(leftEdge, hazard.y);
-            ctx.lineTo(rightEdge, hazard.y);
-            ctx.stroke();
-            ctx.restore();
-            continue;
-          }
-
-          ctx.save();
-          ctx.translate(hazard.x, hazard.y);
-          ctx.rotate(hazard.rotation);
-
-          if (hazard.type === "shard") {
-            const glow = ctx.createRadialGradient(0, 0, 2, 0, 0, hazard.r * 1.8);
-            glow.addColorStop(0, "rgba(255, 216, 125, 0.35)");
-            glow.addColorStop(1, "rgba(255, 216, 125, 0)");
-            ctx.fillStyle = glow;
-            ctx.fillRect(-hazard.r * 2, -hazard.r * 2, hazard.r * 4, hazard.r * 4);
-
-            ctx.beginPath();
-            ctx.moveTo(0, -hazard.r);
-            ctx.lineTo(hazard.r * 0.78, 0);
-            ctx.lineTo(0, hazard.r);
-            ctx.lineTo(-hazard.r * 0.78, 0);
-            ctx.closePath();
-            const fill = ctx.createLinearGradient(-hazard.r, -hazard.r, hazard.r, hazard.r);
-            fill.addColorStop(0, "#fff0a8");
-            fill.addColorStop(1, "#ff8f72");
-            ctx.fillStyle = fill;
-            ctx.fill();
-          } else if (hazard.type === "mine") {
-            const pulse = 1 + Math.sin(state.time * 3 + hazard.seed) * 0.08;
-            ctx.scale(pulse, pulse);
-            const glow = ctx.createRadialGradient(0, 0, 4, 0, 0, hazard.r * 1.6);
-            glow.addColorStop(0, "rgba(255, 230, 147, 0.18)");
-            glow.addColorStop(1, "rgba(255, 230, 147, 0)");
-            ctx.fillStyle = glow;
-            ctx.beginPath();
-            ctx.arc(0, 0, hazard.r * 1.7, 0, TAU);
-            ctx.fill();
-            for (let i = 0; i < 8; i += 1) {
-              const angle = (TAU / 8) * i;
-              ctx.beginPath();
-              ctx.moveTo(Math.cos(angle) * (hazard.r * 0.8), Math.sin(angle) * (hazard.r * 0.8));
-              ctx.lineTo(Math.cos(angle) * (hazard.r * 1.38), Math.sin(angle) * (hazard.r * 1.38));
-              ctx.strokeStyle = "rgba(255, 198, 112, 0.82)";
-              ctx.lineWidth = 3;
-              ctx.stroke();
-            }
-            ctx.beginPath();
-            ctx.arc(0, 0, hazard.r * 0.86, 0, TAU);
-            const fill = ctx.createRadialGradient(-4, -5, 3, 0, 0, hazard.r);
-            fill.addColorStop(0, "#fff2b2");
-            fill.addColorStop(1, "#ff946a");
-            ctx.fillStyle = fill;
-            ctx.fill();
-          } else if (hazard.type === "drone") {
-            const glow = ctx.createRadialGradient(0, 0, 3, 0, 0, hazard.r * 1.8);
-            glow.addColorStop(0, "rgba(121, 255, 241, 0.18)");
-            glow.addColorStop(1, "rgba(121, 255, 241, 0)");
-            ctx.fillStyle = glow;
-            ctx.beginPath();
-            ctx.arc(0, 0, hazard.r * 1.7, 0, TAU);
-            ctx.fill();
-
-            ctx.beginPath();
-            ctx.moveTo(0, -hazard.r);
-            ctx.lineTo(hazard.r * 0.94, hazard.r * 0.18);
-            ctx.lineTo(hazard.r * 0.34, hazard.r * 0.84);
-            ctx.lineTo(-hazard.r * 0.34, hazard.r * 0.84);
-            ctx.lineTo(-hazard.r * 0.94, hazard.r * 0.18);
-            ctx.closePath();
-            const fill = ctx.createLinearGradient(-hazard.r, -hazard.r, hazard.r, hazard.r);
-            fill.addColorStop(0, "#8dfff4");
-            fill.addColorStop(1, "#53a9ff");
-            ctx.fillStyle = fill;
-            ctx.fill();
-
-            ctx.fillStyle = "#03111d";
-            ctx.beginPath();
-            ctx.arc(0, 0, hazard.r * 0.26, 0, TAU);
-            ctx.fill();
-          }
-          ctx.restore();
-        }
-      }
-
-      function drawRings() {
-        for (const ring of rings) {
-          ctx.save();
-          ctx.translate(ring.x, ring.y);
-          const pulse = 1 + Math.sin(ring.pulse) * 0.04;
-          ctx.scale(pulse, pulse);
-          ctx.strokeStyle = ring.claimed ? "rgba(255, 232, 152, 0.22)" : "rgba(255, 232, 152, 0.92)";
-          ctx.lineWidth = 5;
-          ctx.beginPath();
-          ctx.arc(0, 0, ring.r, 0, TAU);
-          ctx.stroke();
-          ctx.strokeStyle = ring.claimed ? "rgba(255, 249, 216, 0.15)" : "rgba(255, 249, 216, 0.58)";
-          ctx.lineWidth = 1.5;
-          ctx.beginPath();
-          ctx.arc(0, 0, ring.r + 8, 0, TAU);
-          ctx.stroke();
-          ctx.restore();
-        }
-      }
-
-      function drawPickups() {
-        for (const pickup of pickups) {
-          ctx.save();
-          ctx.translate(pickup.x, pickup.y);
-          ctx.rotate(state.demoTime * 2 + pickup.pulse);
-          const color = pickup.kind === "repair" ? "#8bffbb" : "#71f5ff";
-          ctx.shadowBlur = 18;
-          ctx.shadowColor = color;
-          ctx.fillStyle = color;
-          ctx.beginPath();
-          ctx.moveTo(0, -pickup.r);
-          ctx.lineTo(pickup.r * 0.72, 0);
-          ctx.lineTo(0, pickup.r);
-          ctx.lineTo(-pickup.r * 0.72, 0);
-          ctx.closePath();
-          ctx.fill();
-          ctx.restore();
-        }
-      }
-
-      function drawParticles() {
-        for (const particle of particles) {
-          const alpha = clamp(particle.life / particle.maxLife, 0, 1);
-          ctx.fillStyle = particle.color.replace(/[\d.]+\)$/u, `${alpha})`);
-          ctx.beginPath();
-          ctx.arc(particle.x, particle.y, particle.size * alpha, 0, TAU);
-          ctx.fill();
-        }
-
-        for (const wave of shockwaves) {
-          const alpha = clamp(wave.life / wave.maxLife, 0, 1);
-          ctx.strokeStyle = wave.color.replace(/[\d.]+\)$/u, `${0.9 * alpha})`);
-          ctx.lineWidth = 3 * alpha;
-          ctx.beginPath();
-          ctx.arc(wave.x, wave.y, wave.radius, 0, TAU);
-          ctx.stroke();
-        }
-      }
-
-      function drawPlayer() {
-        if (player.overdrive > 0) {
-          const beamGrad = ctx.createLinearGradient(player.x, player.y - 18, player.x, -20);
-          beamGrad.addColorStop(0, "rgba(93, 245, 255, 0)");
-          beamGrad.addColorStop(0.15, "rgba(93, 245, 255, 0.28)");
-          beamGrad.addColorStop(1, "rgba(255, 255, 255, 0.62)");
-          ctx.strokeStyle = beamGrad;
-          ctx.lineWidth = 18;
-          ctx.beginPath();
-          ctx.moveTo(player.x, player.y - 20);
-          ctx.lineTo(player.x, -20);
-          ctx.stroke();
-        }
-
-        if (player.invuln > 0 && Math.floor(player.invuln * 18) % 2 === 0) {
-          return;
-        }
-
-        ctx.save();
-        ctx.translate(player.x, player.y);
-        ctx.rotate(player.bank * 0.55);
-
-        const glowRadius = player.r * (2.1 + player.glow * 0.8);
-        const glow = ctx.createRadialGradient(0, 0, 4, 0, 0, glowRadius);
-        glow.addColorStop(0, player.overdrive > 0 ? "rgba(162, 255, 236, 0.32)" : "rgba(94, 246, 255, 0.24)");
-        glow.addColorStop(1, "rgba(94, 246, 255, 0)");
-        ctx.fillStyle = glow;
-        ctx.beginPath();
-        ctx.arc(0, 0, glowRadius, 0, TAU);
-        ctx.fill();
-
-        ctx.beginPath();
-        ctx.moveTo(0, -26);
-        ctx.lineTo(18, 16);
-        ctx.lineTo(0, 10);
-        ctx.lineTo(-18, 16);
-        ctx.closePath();
-        const hull = ctx.createLinearGradient(-18, -20, 18, 18);
-        hull.addColorStop(0, player.overdrive > 0 ? "#eafff6" : "#f3feff");
-        hull.addColorStop(0.6, player.overdrive > 0 ? "#90ffd7" : "#6ff6ff");
-        hull.addColorStop(1, player.overdrive > 0 ? "#4fe39d" : "#2e7be7");
-        ctx.fillStyle = hull;
-        ctx.fill();
-
-        ctx.beginPath();
-        ctx.moveTo(0, -12);
-        ctx.lineTo(8, 6);
-        ctx.lineTo(0, 3);
-        ctx.lineTo(-8, 6);
-        ctx.closePath();
-        ctx.fillStyle = "#042033";
-        ctx.fill();
-
-        ctx.fillStyle = player.overdrive > 0 ? "#b8ffe7" : "#fff59f";
-        ctx.beginPath();
-        ctx.moveTo(-7, 17);
-        ctx.lineTo(0, 28 + Math.sin(state.time * 40) * 2);
-        ctx.lineTo(7, 17);
-        ctx.closePath();
-        ctx.fill();
-
-        ctx.restore();
-      }
-
-      function drawTargetReticle() {
-        if (state.mode === "touch" && !input.touchActive) {
-          return;
-        }
-        const x = input.targetX * w;
-        const y = input.targetY * h;
-        ctx.save();
-        ctx.globalAlpha = 0.16;
-        ctx.strokeStyle = state.mode === "gyro" ? "rgba(136, 255, 198, 0.9)" : "rgba(255, 245, 173, 0.9)";
-        ctx.lineWidth = 1.2;
-        ctx.beginPath();
-        ctx.arc(x, y, 22, 0, TAU);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(x - 8, y);
-        ctx.lineTo(x + 8, y);
-        ctx.moveTo(x, y - 8);
-        ctx.lineTo(x, y + 8);
-        ctx.stroke();
-        ctx.restore();
-      }
-
-      function drawPauseOverlay() {
-        if (state.phase !== "paused") {
-          return;
-        }
-        ctx.save();
-        ctx.fillStyle = "rgba(4, 9, 15, 0.46)";
-        ctx.fillRect(0, 0, w, h);
-        ctx.fillStyle = "#eefeff";
-        ctx.font = '800 28px "Trebuchet MS", "Avenir Next", sans-serif';
-        ctx.textAlign = "center";
-        ctx.fillText("PAUSED", w * 0.5, h * 0.47);
-        ctx.font = '400 14px "Trebuchet MS", "Avenir Next", sans-serif';
-        ctx.fillStyle = "rgba(236, 249, 255, 0.78)";
-        ctx.fillText("再開で航路に戻ります", w * 0.5, h * 0.51);
-        ctx.restore();
-      }
-
-      function render() {
-        const inMission = state.phase === "running" || state.phase === "paused";
-        ctx.save();
-        if (state.shake > 0) {
-          ctx.translate(rand(-state.shake, state.shake), rand(-state.shake, state.shake));
-        }
-        drawBackground();
-        if (inMission) {
-          drawRings();
-          drawPickups();
-          drawHazards();
-          drawBullets();
-        }
-        drawParticles();
-        if (inMission) {
-          drawTargetReticle();
-        }
-        drawPlayer();
-        ctx.restore();
-
-        if (state.flash > 0) {
-          ctx.fillStyle = `rgba(255, 255, 255, ${state.flash * 0.45})`;
-          ctx.fillRect(0, 0, w, h);
-        }
-
-        drawPauseOverlay();
-      }
-
-      function updateAttract(dt) {
-        state.demoTime += dt;
-        state.shake = Math.max(0, state.shake - dt * 24);
-        player.x = w * 0.5 + Math.sin(state.demoTime * 1.1) * w * 0.08;
-        player.y = h * 0.76 + Math.cos(state.demoTime * 0.8) * 10;
-        player.bank = Math.sin(state.demoTime * 1.8) * 0.25;
-        player.overdrive = Math.max(0, player.overdrive - dt);
-        updateParticles(dt);
-        if (Math.random() < 0.06) {
-          addParticle(rand(0, w), -10, {
-            vx: rand(-10, 10),
-            vy: rand(60, 140),
-            color: "rgba(145, 235, 255, 0.65)",
-            life: rand(1.6, 2.2),
-            size: rand(1.5, 2.5)
-          });
-        }
-      }
-
-      function loop(time) {
-        const dt = Math.min(0.033, ((time - lastTime) || 16.7) / 1000);
-        lastTime = time;
-
-        if (state.phase === "running") {
-          updateGame(dt);
-        } else if (state.phase === "paused") {
-          state.demoTime += dt;
-          updateParticles(dt * 0.25);
+        if (cleared) {
+          document.getElementById("resultEyebrow").textContent = "Mission Clear";
+          document.getElementById("resultTitle").textContent = "嵐の目を突破";
+          document.getElementById("resultLead").textContent = "FLOWを保った分だけスコアが大きく伸びます。";
+          document.getElementById("resultRank").textContent = finalScore > 50000 ? "S" : finalScore > 30000 ? "A" : finalScore > 15000 ? "B" : "C";
         } else {
-          updateAttract(dt);
+          document.getElementById("resultEyebrow").textContent = "Mission Failed";
+          document.getElementById("resultTitle").textContent = "機体喪失";
+          document.getElementById("resultLead").textContent = "次の航路で再挑戦してください。";
+          document.getElementById("resultRank").textContent = "F";
         }
-
-        render();
-        requestAnimationFrame(loop);
       }
 
-      function onOrientation(event) {
-        if (typeof event.gamma === "number") {
-          input.gamma = event.gamma;
-        }
-        if (typeof event.beta === "number") {
-          input.beta = event.beta;
-        }
-        input.sensorSamples += 1;
-        input.lastSensorAt = performance.now();
-      }
+      function update(deltaTime) {
+        if (gameState !== "playing") return;
 
-      function updatePointer(event) {
-        const point = event.touches ? event.touches[0] : event;
-        input.touchX = point.clientX;
-        input.touchY = point.clientY;
-      }
+        missionTime -= deltaTime;
+        missionProgress = ((120 - missionTime) / 120) * 100;
 
-      async function beginGyroMode() {
-        await unlockAudio();
-        const granted = await requestMotionAccess();
-        state.mode = granted ? "gyro" : "touch";
-        startRun();
-      }
-
-      async function beginTouchMode() {
-        await unlockAudio();
-        state.mode = "touch";
-        startRun();
-      }
-
-      gyroBtn.addEventListener("click", beginGyroMode);
-      touchBtn.addEventListener("click", beginTouchMode);
-
-      retryBtn.addEventListener("click", () => {
-        if (state.mode === "gyro") {
-          beginGyroMode();
-        } else {
-          beginTouchMode();
-        }
-      });
-
-      resultMenuBtn.addEventListener("click", () => {
-        returnToMenu();
-      });
-
-      pauseBtn.addEventListener("click", () => {
-        pauseRun();
-      });
-
-      recenterBtn.addEventListener("click", () => {
-        calibrateMotion();
-      });
-
-      menuRecenterBtn.addEventListener("click", () => {
-        calibrateMotion();
-      });
-
-      muteBtn.addEventListener("click", async () => {
-        await unlockAudio();
-        state.muted = !state.muted;
-        setButtons();
-      });
-
-      sensitivity.addEventListener("input", (event) => {
-        input.sensitivity = Number(event.target.value);
-        setSensitivityLabel();
-      });
-
-      window.addEventListener("resize", resize);
-      window.addEventListener("deviceorientation", onOrientation, true);
-
-      window.addEventListener("pointerdown", (event) => {
-        if (state.phase !== "running" && state.phase !== "paused") {
+        if (missionTime <= 0) {
+          endGame(true);
           return;
         }
-        if (state.mode === "touch" || input.sensorSamples === 0) {
-          input.touchActive = true;
-          updatePointer(event);
-        }
-      }, { passive: true });
 
-      window.addEventListener("pointermove", (event) => {
-        if (!input.touchActive) {
+        if (hp <= 0) {
+          endGame(false);
           return;
         }
-        updatePointer(event);
-      }, { passive: true });
 
-      window.addEventListener("pointerup", () => {
-        input.touchActive = false;
-      }, { passive: true });
+        updateHUD();
+      }
 
-      window.addEventListener("pointercancel", () => {
-        input.touchActive = false;
-      }, { passive: true });
+      function draw() {
+        ctx.fillStyle = "rgba(10, 14, 39, 0.1)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      document.addEventListener("visibilitychange", () => {
-        if (document.hidden && state.phase === "running") {
-          pauseRun();
+        if (gameState === "playing") {
+          ctx.fillStyle = "#00f0ff";
+          ctx.beginPath();
+          ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.strokeStyle = "rgba(0, 240, 255, 0.5)";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(player.x, player.y, player.radius + 8, 0, Math.PI * 2);
+          ctx.stroke();
         }
+      }
+
+      function gameLoop(currentTime) {
+        if (!lastTime) lastTime = currentTime;
+        const deltaTime = Math.min((currentTime - lastTime) / 1000, 0.016);
+        lastTime = currentTime;
+
+        update(deltaTime);
+        draw();
+        requestAnimationFrame(gameLoop);
+      }
+
+      let lastTime = 0;
+
+      document.getElementById("gyroBtn").addEventListener("click", () => startGame("gyro"));
+      document.getElementById("touchBtn").addEventListener("click", () => startGame("touch"));
+      document.getElementById("retryBtn").addEventListener("click", () => {
+        gameState = "menu";
+        menu.classList.remove("hidden");
+        result.classList.add("hidden");
+      });
+      document.getElementById("resultMenuBtn").addEventListener("click", () => {
+        gameState = "menu";
+        menu.classList.remove("hidden");
+        result.classList.add("hidden");
       });
 
-      loadBestScore();
-      resize();
-      setSensitivityLabel();
-      setButtons();
-      updateHud();
-      requestAnimationFrame(loop);
+      document.getElementById("sensitivity").addEventListener("input", (e) => {
+        sensitivity = parseFloat(e.target.value);
+        document.getElementById("sensitivityValue").textContent = sensitivity.toFixed(2) + "x";
+      });
+
+      document.getElementById("muteBtn").addEventListener("click", (e) => {
+        muted = !muted;
+        e.target.textContent = muted ? "音 OFF" : "音 ON";
+      });
+
+      window.addEventListener("resize", resizeCanvas);
+      resizeCanvas();
+
+      document.getElementById("bestScoreText").textContent = bestScore;
+      requestAnimationFrame(gameLoop);
     })();
   </script>
 </body>
