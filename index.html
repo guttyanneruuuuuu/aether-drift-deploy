@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0a0e27">
+  <title>Aether Drift - Gyro Arcade</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-top: #0a0e27;
+      --bg-bottom: #050810;
+      --panel: rgba(10, 14, 39, 0.85);
+      --panel-border: rgba(94, 246, 255, 0.35);
+      --text: #f0f9ff;
+      --muted: rgba(226, 252, 255, 0.85);
+      --accent: #00f0ff;
+      --accent-2: #ffdf73;
+      --danger: #ff4466;
+      --good: #66ff99;
+      --shadow: 0 25px 80px rgba(0, 0, 0, 0.6);
+      --glow-shadow: 0 0 40px rgba(0, 240, 255, 0.4);
+      --safe-bottom: max(20px, env(safe-area-inset-bottom));
+      --safe-top: max(16px, env(safe-area-inset-top));
+      --safe-left: max(14px, env(safe-area-inset-left));
+      --safe-right: max(14px, env(safe-area-inset-right));
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    html,
+    body {
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(0, 240, 255, 0.25), transparent 40%),
+        radial-gradient(circle at 85% 15%, rgba(255, 223, 115, 0.15), transparent 35%),
+        radial-gradient(circle at 50% 80%, rgba(102, 255, 153, 0.1), transparent 50%),
+        linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
+      font-family: "Space Mono", monospace;
+      color: var(--text);
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: -20%;
+      pointer-events: none;
+      mix-blend-mode: screen;
+      opacity: 0.35;
+    }
+
+    body::before {
+      background:
+        radial-gradient(circle at 30% 35%, rgba(0, 240, 255, 0.28), transparent 30%),
+        radial-gradient(circle at 72% 28%, rgba(140, 180, 255, 0.22), transparent 25%);
+      animation: driftGlow 16s ease-in-out infinite alternate;
+    }
+
+    body::after {
+      background:
+        linear-gradient(120deg, transparent 20%, rgba(0, 240, 255, 0.12) 35%, transparent 45%),
+        linear-gradient(300deg, transparent 55%, rgba(102, 255, 153, 0.08) 70%, transparent 85%);
+      animation: driftLines 20s linear infinite;
+    }
+
+    @keyframes driftGlow {
+      from {
+        transform: translate3d(-3%, -2%, 0) scale(1);
+      }
+      to {
+        transform: translate3d(4%, 3%, 0) scale(1.12);
+      }
+    }
+
+    @keyframes driftLines {
+      from {
+        transform: translate3d(-3%, -3%, 0) rotate(0deg);
+      }
+      to {
+        transform: translate3d(3%, 3%, 0) rotate(5deg);
+      }
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% {
+        box-shadow: var(--glow-shadow), var(--shadow);
+      }
+      50% {
+        box-shadow: 0 0 60px rgba(0, 240, 255, 0.6), var(--shadow);
+      }
+    }
+
+    @keyframes float-in {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: -1000px 0;
+      }
+      100% {
+        background-position: 1000px 0;
+      }
+    }
+
+    canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .panel {
+      position: fixed;
+      left: 50%;
+      width: min(92vw, 540px);
+      padding: 28px 24px 24px;
+      border-radius: 32px;
+      background:
+        linear-gradient(135deg, rgba(15, 28, 60, 0.92), rgba(10, 14, 39, 0.88));
+      border: 1.5px solid var(--panel-border);
+      box-shadow: var(--glow-shadow), var(--shadow);
+      backdrop-filter: blur(24px) saturate(150%);
+      transform: translateX(-50%);
+      z-index: 5;
+      animation: float-in 0.6s ease-out;
+    }
+
+    #menu {
+      top: max(34px, calc(var(--safe-top) + 12px));
+    }
+
+    #result {
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .eyebrow {
+      font-size: 0.75rem;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: rgba(0, 240, 255, 0.9);
+      margin-bottom: 12px;
+      font-weight: 700;
+      font-family: "Orbitron", sans-serif;
+    }
+
+    h1,
+    h2 {
+      margin: 0;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      line-height: 1.05;
+      font-family: "Orbitron", sans-serif;
+      background: linear-gradient(135deg, #00f0ff, #66ff99);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 9vw, 4rem);
+      text-shadow: 0 0 30px rgba(0, 240, 255, 0.3);
+    }
+
+    h2 {
+      font-size: clamp(1.9rem, 6.5vw, 2.6rem);
+      margin-bottom: 14px;
+    }
+
+    .lead {
+      margin: 16px 0 20px;
+      line-height: 1.7;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin: 20px 0;
+    }
+
+    .card {
+      padding: 16px 14px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.08), rgba(102, 255, 153, 0.05));
+      border: 1px solid rgba(0, 240, 255, 0.25);
+      backdrop-filter: blur(12px);
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      border-color: rgba(0, 240, 255, 0.5);
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .card-title {
+      display: block;
+      font-size: 0.75rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      color: rgba(0, 240, 255, 0.85);
+      font-weight: 700;
+      font-family: "Orbitron", sans-serif;
+    }
+
+    .card p {
+      margin: 0;
+      line-height: 1.6;
+      font-size: 0.9rem;
+      color: rgba(240, 249, 255, 0.95);
+    }
+
+    .button-row,
+    .control-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .button-row {
+      margin-top: 20px;
+    }
+
+    button {
+      appearance: none;
+      border: none;
+      border-radius: 12px;
+      padding: 14px 22px;
+      font: inherit;
+      color: #0a0e27;
+      background: linear-gradient(135deg, #00f0ff, #66ff99);
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      box-shadow: 0 12px 32px rgba(0, 240, 255, 0.35);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      font-family: "Orbitron", sans-serif;
+      position: relative;
+      overflow: hidden;
+    }
+
+    button::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.2);
+      transition: left 0.4s ease;
+    }
+
+    button:hover::before {
+      left: 100%;
+    }
+
+    button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 48px rgba(0, 240, 255, 0.5);
+    }
+
+    button:active {
+      transform: translateY(-1px) scale(0.98);
+    }
+
+    button.secondary,
+    #hud button {
+      color: var(--text);
+      background: rgba(0, 240, 255, 0.12);
+      box-shadow: 0 8px 20px rgba(0, 240, 255, 0.15);
+      border: 1.5px solid rgba(0, 240, 255, 0.3);
+    }
+
+    button.secondary:hover {
+      background: rgba(0, 240, 255, 0.2);
+      border-color: rgba(0, 240, 255, 0.6);
+    }
+
+    button.ghost {
+      padding: 10px 16px;
+      font-size: 0.9rem;
+    }
+
+    .settings {
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(0, 240, 255, 0.2);
+    }
+
+    .slider-wrap {
+      flex: 1;
+      min-width: 180px;
+    }
+
+    .slider-wrap label,
+    .status,
+    .note {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: #00f0ff;
+      margin-top: 8px;
+    }
+
+    .status {
+      margin: 14px 0 0;
+      line-height: 1.6;
+    }
+
+    .note {
+      margin: 12px 0 0;
+      line-height: 1.6;
+    }
+
+    #hud {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 4;
+    }
+
+    .hud-top {
+      position: absolute;
+      top: var(--safe-top);
+      left: var(--safe-left);
+      right: var(--safe-right);
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .hud-box {
+      min-width: 0;
+      padding: 13px 16px;
+      border-radius: 24px;
+      background: rgba(10, 14, 39, 0.75);
+      border: 1.5px solid rgba(0, 240, 255, 0.3);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+      animation: pulse-glow 3s ease-in-out infinite;
+    }
+
+    .hud-label {
+      display: block;
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(0, 240, 255, 0.8);
+      margin-bottom: 6px;
+      font-weight: 700;
+      font-family: "Orbitron", sans-serif;
+    }
+
+    .hud-value {
+      font-size: clamp(1.1rem, 4vw, 1.4rem);
+      font-weight: 900;
+      letter-spacing: 0.03em;
+      white-space: nowrap;
+      font-family: "Orbitron", sans-serif;
+    }
+
+    .hud-sub {
+      font-size: 0.85rem;
+      color: rgba(102, 255, 153, 0.9);
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    .hud-bottom {
+      position: absolute;
+      left: var(--safe-left);
+      right: var(--safe-right);
+      bottom: calc(var(--safe-bottom) + 10px);
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .meter-stack {
+      flex: 1;
+      min-width: 0;
+      display: grid;
+      gap: 12px;
+    }
+
+    .meter-card {
+      padding: 12px 14px 14px;
+      border-radius: 22px;
+      background: rgba(10, 14, 39, 0.8);
+      border: 1.5px solid rgba(0, 240, 255, 0.25);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(16px);
+    }
+
+    .meter-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      color: rgba(240, 249, 255, 0.9);
+      margin-bottom: 10px;
+      gap: 12px;
+      font-weight: 600;
+    }
+
+    .meter {
+      height: 12px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(0, 240, 255, 0.1);
+      border: 1px solid rgba(0, 240, 255, 0.2);
+    }
+
+    .fill {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      transition: width 0.2s ease;
+      transform-origin: left center;
+    }
+
+    #missionFill {
+      background: linear-gradient(90deg, #66ff99, #00f0ff 50%, #ffdf73);
+    }
+
+    #chargeFill {
+      background: linear-gradient(90deg, #00f0ff, #66ff99 60%, #ffdf73);
+    }
+
+    .hud-buttons {
+      display: flex;
+      gap: 10px;
+      pointer-events: auto;
+    }
+
+    .hud-buttons button {
+      min-width: 80px;
+    }
+
+    #toast {
+      position: fixed;
+      left: 50%;
+      top: calc(var(--safe-top) + 100px);
+      transform: translateX(-50%) translateY(-14px);
+      z-index: 6;
+      padding: 12px 20px;
+      border-radius: 999px;
+      background: rgba(10, 14, 39, 0.95);
+      border: 1.5px solid rgba(0, 240, 255, 0.4);
+      color: #f0f9ff;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(16px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    #orientationHint {
+      position: fixed;
+      left: 50%;
+      bottom: calc(var(--safe-bottom) + 90px);
+      transform: translateX(-50%);
+      z-index: 6;
+      padding: 12px 18px;
+      border-radius: 18px;
+      background: rgba(10, 14, 39, 0.9);
+      color: rgba(240, 252, 255, 0.95);
+      font-size: 0.9rem;
+      border: 1.5px solid rgba(0, 240, 255, 0.3);
+      backdrop-filter: blur(16px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    #orientationHint.show {
+      opacity: 1;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin: 20px 0;
+    }
+
+    .result-box {
+      padding: 16px 14px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.1), rgba(102, 255, 153, 0.05));
+      border: 1px solid rgba(0, 240, 255, 0.25);
+      text-align: center;
+    }
+
+    .result-box .small {
+      display: block;
+      font-size: 0.75rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(0, 240, 255, 0.85);
+      margin-bottom: 8px;
+      font-weight: 700;
+      font-family: "Orbitron", sans-serif;
+    }
+
+    .result-box strong {
+      font-size: 1.4rem;
+      letter-spacing: 0.04em;
+      font-family: "Orbitron", sans-serif;
+      font-weight: 900;
+    }
+
+    @media (max-width: 520px) {
+      .grid,
+      .result-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hud-top,
+      .hud-bottom {
+        gap: 10px;
+      }
+
+      .hud-buttons button {
+        min-width: 72px;
+      }
+
+      .panel {
+        padding: 24px 20px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="game"></canvas>
+
+  <div id="hud" class="hidden">
+    <div class="hud-top">
+      <div class="hud-box">
+        <span class="hud-label">Score</span>
+        <div class="hud-value" id="scoreText">0</div>
+        <div class="hud-sub" id="comboText">FLOW x1.0</div>
+      </div>
+      <div class="hud-box" style="text-align:right;">
+        <span class="hud-label">Integrity</span>
+        <div class="hud-value" id="hpText">4 / 4</div>
+        <div class="hud-sub" id="modeText">GYRO READY</div>
+      </div>
+    </div>
+
+    <div class="hud-bottom">
+      <div class="meter-stack">
+        <div class="meter-card">
+          <div class="meter-head">
+            <span id="sectorText">Sector 1 / Dawn Shelf</span>
+            <span id="timeText">120.0s</span>
+          </div>
+          <div class="meter">
+            <div class="fill" id="missionFill"></div>
+          </div>
+        </div>
+        <div class="meter-card">
+          <div class="meter-head">
+            <span>Overdrive Charge</span>
+            <span id="chargeText">0%</span>
+          </div>
+          <div class="meter">
+            <div class="fill" id="chargeFill"></div>
+          </div>
+        </div>
+      </div>
+      <div class="hud-buttons">
+        <button id="recenterBtn" class="ghost" type="button">再中心</button>
+        <button id="pauseBtn" class="ghost" type="button">PAUSE</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="menu" class="panel">
+    <div class="eyebrow">⚡ Gyro Arcade</div>
+    <h1>Aether Drift</h1>
+    <p class="lead">
+      端末を傾けて小型スキマーを操り、4つの嵐域を抜けて「目」へ飛び込みます。
+      ジャイロ主体の回避と、オート射撃の位置取り、リスクを取るほど伸びるFLOW倍率が軸のスマホ専用アーケードです。
+    </p>
+
+    <div class="grid">
+      <div class="card">
+        <span class="card-title">🎮 Control</span>
+        <p>左右は大きく、前後は軽く傾けて機体を操縦。ズレたらいつでも再中心。</p>
+      </div>
+      <div class="card">
+        <span class="card-title">🎯 Objective</span>
+        <p>2分間の航路を完走。リングをくぐり、コアを集め、被弾せずFLOWを繋ぐ。</p>
+      </div>
+      <div class="card">
+        <span class="card-title">⚡ Risk Reward</span>
+        <p>近接回避や連続撃破で倍率上昇。100%で自動OVERDRIVE、前方を一気に薙ぎ払います。</p>
+      </div>
+      <div class="card">
+        <span class="card-title">📱 Fallback</span>
+        <p>ジャイロが使えない環境では、タッチドラッグに自動で切り替えられます。</p>
+      </div>
+    </div>
+    <div class="button-row">
+      <button id="gyroBtn" type="button">ジャイロで開始</button>
+      <button id="touchBtn" class="secondary" type="button">タッチで開始</button>
+    </div>
+    <div class="settings">
+      <div class="control-row">
+        <div class="slider-wrap">
+          <label for="sensitivity">感度 <strong id="sensitivityValue">1.00x</strong></label>
+          <input id="sensitivity" type="range" min="0.7" max="1.5" step="0.05" value="1.0">
+        </div>
+        <button id="menuRecenterBtn" class="secondary ghost" type="button">姿勢を記録</button>
+        <button id="muteBtn" class="secondary ghost" type="button">音 ON</button>
+      </div>
+      <p class="status" id="statusText">iPhone / iPad は開始時にモーション許可が必要です。Safari では https または localhost 配信が安定します。</p>
+      <p class="note">ベストスコア: <strong id="bestScoreText">0</strong></p>
+    </div>
+  </div>
+  <div id="result" class="panel hidden">
+    <div class="eyebrow" id="resultEyebrow">Mission Result</div>
+    <h2 id="resultTitle">Mission Clear</h2>
+    <p class="lead" id="resultLead">嵐の目を突破しました。FLOWを保った分だけスコアが大きく伸びます。</p>
+    <div class="result-grid">
+      <div class="result-box">
+        <span class="small">Score</span>
+        <strong id="resultScore">0</strong>
+      </div>
+      <div class="result-box">
+        <span class="small">Rank</span>
+        <strong id="resultRank">C</strong>
+      </div>
+      <div class="result-box">
+        <span class="small">Best</span>
+        <strong id="resultBest">0</strong>
+      </div>
+      <div class="result-box">
+        <span class="small">Mode</span>
+        <strong id="resultMode">GYRO</strong>
+      </div>
+    </div>
+    <div class="button-row">
+      <button id="retryBtn" type="button">もう一度飛ぶ</button>
+      <button id="resultMenuBtn" class="secondary" type="button">タイトルへ</button>
+    </div>
+  </div>
+  <div id="toast" aria-live="polite"></div>
+  <div id="orientationHint">縦持ち推奨。横向きでも遊べますが、操作感は縦持ちが安定します。</div>
+  <script>
+    (() => {
+      "use strict";
+      const canvas = document.getElementById("game");
+      const ctx = canvas.getContext("2d");
+      const hud = document.getElementById("hud");
+      const menu = document.getElementById("menu");
+      const result = document.getElementById("result");
+      const toast = document.getElementById("toast");
+      const orientationHint = document.getElementById("orientationHint");
+
+      let gameState = "menu";
+      let gameMode = "gyro";
+      let score = 0;
+      let bestScore = parseInt(localStorage.getItem("bestScore") || "0");
+      let hp = 4;
+      let maxHp = 4;
+      let flow = 0;
+      let flowMultiplier = 1;
+      let overdriveCharge = 0;
+      let missionTime = 120;
+      let missionProgress = 0;
+      let sensitivity = 1;
+      let muted = false;
+
+      const player = { x: 0, y: 0, vx: 0, vy: 0, angle: 0, radius: 8 };
+      const bullets = [];
+      const enemies = [];
+      const particles = [];
+      const rings = [];
+      const cores = [];
+
+      function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+
+      function showToast(message) {
+        toast.textContent = message;
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 2000);
+      }
+
+      function updateHUD() {
+        document.getElementById("scoreText").textContent = Math.floor(score);
+        document.getElementById("comboText").textContent = `FLOW x${flowMultiplier.toFixed(1)}`;
+        document.getElementById("hpText").textContent = `${hp} / ${maxHp}`;
+        document.getElementById("timeText").textContent = `${Math.max(0, missionTime).toFixed(1)}s`;
+        document.getElementById("chargeText").textContent = `${Math.floor(overdriveCharge)}%`;
+        document.getElementById("missionFill").style.width = `${Math.min(100, missionProgress)}%`;
+        document.getElementById("chargeFill").style.width = `${Math.min(100, overdriveCharge)}%`;
+      }
+
+      function startGame(mode) {
+        gameMode = mode;
+        gameState = "playing";
+        menu.classList.add("hidden");
+        hud.classList.remove("hidden");
+        result.classList.add("hidden");
+
+        score = 0;
+        hp = maxHp;
+        flow = 0;
+        flowMultiplier = 1;
+        overdriveCharge = 0;
+        missionTime = 120;
+        missionProgress = 0;
+        player.x = canvas.width / 2;
+        player.y = canvas.height / 2;
+        player.vx = 0;
+        player.vy = 0;
+        bullets.length = 0;
+        enemies.length = 0;
+        particles.length = 0;
+        rings.length = 0;
+        cores.length = 0;
+
+        updateHUD();
+      }
+
+      function endGame(cleared) {
+        gameState = "result";
+        hud.classList.add("hidden");
+        result.classList.remove("hidden");
+
+        const finalScore = Math.floor(score * flowMultiplier);
+        if (finalScore > bestScore) {
+          bestScore = finalScore;
+          localStorage.setItem("bestScore", bestScore);
+        }
+
+        document.getElementById("resultScore").textContent = finalScore;
+        document.getElementById("resultBest").textContent = bestScore;
+        document.getElementById("resultMode").textContent = gameMode.toUpperCase();
+        document.getElementById("bestScoreText").textContent = bestScore;
+
+        if (cleared) {
+          document.getElementById("resultEyebrow").textContent = "Mission Clear";
+          document.getElementById("resultTitle").textContent = "嵐の目を突破";
+          document.getElementById("resultLead").textContent = "FLOWを保った分だけスコアが大きく伸びます。";
+          document.getElementById("resultRank").textContent = finalScore > 50000 ? "S" : finalScore > 30000 ? "A" : finalScore > 15000 ? "B" : "C";
+        } else {
+          document.getElementById("resultEyebrow").textContent = "Mission Failed";
+          document.getElementById("resultTitle").textContent = "機体喪失";
+          document.getElementById("resultLead").textContent = "次の航路で再挑戦してください。";
+          document.getElementById("resultRank").textContent = "F";
+        }
+      }
+
+      function update(deltaTime) {
+        if (gameState !== "playing") return;
+
+        missionTime -= deltaTime;
+        missionProgress = ((120 - missionTime) / 120) * 100;
+
+        if (missionTime <= 0) {
+          endGame(true);
+          return;
+        }
+
+        if (hp <= 0) {
+          endGame(false);
+          return;
+        }
+
+        updateHUD();
+      }
+
+      function draw() {
+        ctx.fillStyle = "rgba(10, 14, 39, 0.1)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        if (gameState === "playing") {
+          ctx.fillStyle = "#00f0ff";
+          ctx.beginPath();
+          ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.strokeStyle = "rgba(0, 240, 255, 0.5)";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(player.x, player.y, player.radius + 8, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+      }
+
+      function gameLoop(currentTime) {
+        if (!lastTime) lastTime = currentTime;
+        const deltaTime = Math.min((currentTime - lastTime) / 1000, 0.016);
+        lastTime = currentTime;
+
+        update(deltaTime);
+        draw();
+        requestAnimationFrame(gameLoop);
+      }
+
+      let lastTime = 0;
+
+      document.getElementById("gyroBtn").addEventListener("click", () => startGame("gyro"));
+      document.getElementById("touchBtn").addEventListener("click", () => startGame("touch"));
+      document.getElementById("retryBtn").addEventListener("click", () => {
+        gameState = "menu";
+        menu.classList.remove("hidden");
+        result.classList.add("hidden");
+      });
+      document.getElementById("resultMenuBtn").addEventListener("click", () => {
+        gameState = "menu";
+        menu.classList.remove("hidden");
+        result.classList.add("hidden");
+      });
+
+      document.getElementById("sensitivity").addEventListener("input", (e) => {
+        sensitivity = parseFloat(e.target.value);
+        document.getElementById("sensitivityValue").textContent = sensitivity.toFixed(2) + "x";
+      });
+
+      document.getElementById("muteBtn").addEventListener("click", (e) => {
+        muted = !muted;
+        e.target.textContent = muted ? "音 OFF" : "音 ON";
+      });
+
+      window.addEventListener("resize", resizeCanvas);
+      resizeCanvas();
+
+      document.getElementById("bestScoreText").textContent = bestScore;
+      requestAnimationFrame(gameLoop);
+    })();
+  </script>
+</body>
+</html>
